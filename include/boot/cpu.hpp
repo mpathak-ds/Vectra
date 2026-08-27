@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: base/kernel.cpp
+ * Path: include/boot/cpu.hpp
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -13,12 +13,15 @@
  * Author: Mayank Pathak (mpathak)
  */
 
+#ifndef BOOT_CPU_H
+#define BOOT_CPU_H
+
 #include <osdef.hpp>
-#include <libkern/klog.hpp>
 
-void kernel_main(void)
-{
-    klog_info("kern", "initializing kernel");
+void cpu_set_vbar(uint64_t val);
+void cpu_set_vaif(uint64_t val);
 
-    while (1);
-}
+uint64_t cpu_get_el();
+uint64_t cpu_get_el_num();
+
+#endif

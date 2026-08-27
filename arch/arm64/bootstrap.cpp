@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: base/kernel.cpp
+ * Path: arch/arm64/bootstrap.cpp
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -14,11 +14,16 @@
  */
 
 #include <osdef.hpp>
+#include <boot/cpu.hpp>
 #include <libkern/klog.hpp>
 
-void kernel_main(void)
-{
-    klog_info("kern", "initializing kernel");
+void kernel_main(void);
 
+extern "C" void boot_main(void)
+{
+    klog_info("boot", "starting Vectra Kernel");
+    klog_info("cpu", "running at EL%d", cpu_get_el_num());
+
+    kernel_main();
     while (1);
 }

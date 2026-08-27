@@ -13,13 +13,13 @@
  * Author: Mayank Pathak (mpathak)
  */
 
-#ifndef KERN_BASE_H
-#define KERN_BASE_H
+#ifndef KERN_UART_H
+#define KERN_UART_H
 
 #define MACHINE_QEMU_VIRT
 //#define MACHINE_OPI
 
-void uart_putc(char c);
+extern "C" void uart_putc(char c) ;
 void uart_puts(const char *s);
 
 #endif

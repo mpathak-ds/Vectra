@@ -4,13 +4,18 @@ SECTIONS
 {
     . = 0x00200000;
 
-    .text : {
+    .text : ALIGN(8) {
         KEEP(*(.text.boot))
         *(.text*)
     }
 
-    .rodata : { *(.rodata*) }
-    .data : { *(.data*) }
+    .rodata : ALIGN(8) {
+        *(.rodata*)
+    }
+
+    .data : ALIGN(8) {
+        *(.data*)
+    }
 
     .bss ALIGN(8) : {
         __bss_start = .;

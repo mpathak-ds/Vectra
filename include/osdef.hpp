@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: base/kernel.cpp
+ * Path: include/osdef.hpp
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -13,12 +13,14 @@
  * Author: Mayank Pathak (mpathak)
  */
 
-#include <osdef.hpp>
-#include <libkern/klog.hpp>
+#ifndef KERN_BASE_H
+#define KERN_BASE_H
 
-void kernel_main(void)
-{
-    klog_info("kern", "initializing kernel");
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+typedef unsigned long uint64_t;
 
-    while (1);
-}
+typedef uint32_t OSSTATUS;
+
+#endif

@@ -22,12 +22,10 @@
 
 #define UART_FR_TXFF (1 << 5)
 
-void uart_putc(char c)
+extern "C" void uart_putc(char c)
 {
-    while (UART_FR & UART_FR_TXFF)
-        ;
-
-    UART_DR = c;
+    volatile unsigned int* dr = (volatile unsigned int*)0x09000000;
+    *dr = c;
 }
 
 void uart_puts(const char *str)
