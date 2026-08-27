@@ -1,0 +1,1 @@
+mkimage -A arm64 -O linux -T script -C none -d boot.cmd boot.scr

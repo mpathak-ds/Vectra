@@ -1,0 +1,494 @@
+VECTRA SOURCE-AVAILABLE LICENSE
+Version 1.0
+
+Copyright (c) 2026 Driftless Software
+
+======================================================================
+1. PURPOSE
+======================================================================
+
+Vectra is provided as source-available software for engineering,
+development, research, evaluation, education, experimentation,
+prototyping, and other non-production purposes.
+
+This License permits individuals and organizations to freely obtain,
+inspect, modify, build, test, and evaluate Vectra.
+
+Commercial production deployment of Vectra requires a separate
+commercial license from the Copyright Holder.
+
+This License is not an Open Source license as defined by the Open
+Source Definition.
+
+======================================================================
+2. DEFINITIONS
+======================================================================
+
+2.1 "Vectra"
+
+"Vectra" means the software, source code, object code, documentation,
+configuration files, build files, scripts, tools, and other materials
+distributed by the Copyright Holder under this License.
+
+2.2 "Copyright Holder"
+
+"Copyright Holder" means:
+
+Driftless Software
+
+2.3 "You"
+
+"You" means an individual or legal entity exercising rights granted
+under this License.
+
+2.4 "Development"
+
+"Development" means creating, modifying, compiling, debugging,
+testing, benchmarking, porting, integrating, or otherwise engineering
+Vectra or software based upon Vectra.
+
+Development includes development performed by employees, contractors,
+students, researchers, or other authorized personnel of an
+organization.
+
+2.5 "Evaluation"
+
+"Evaluation" means examining or testing Vectra to determine whether
+Vectra is suitable for a particular application, hardware platform,
+product, service, or technical requirement.
+
+2.6 "Prototype"
+
+"Prototype" means a non-production implementation used for engineering,
+testing, demonstration, experimentation, research, validation, or
+proof-of-concept purposes.
+
+A Prototype is not a Commercial Deployment merely because it operates
+physical hardware or a physical robot.
+
+2.7 "Commercial Deployment"
+
+"Commercial Deployment" means deploying Vectra as part of a product,
+system, device, robot, machine, appliance, embedded system, or other
+commercial offering that is:
+
+(a) sold;
+
+(b) leased;
+
+(c) rented;
+
+(d) licensed;
+
+(e) distributed;
+
+(f) supplied to customers or end users;
+
+(g) operated for customers or end users as a commercial service; or
+
+(h) otherwise placed into production for the purpose of generating
+    commercial revenue or commercial benefit.
+
+(i) operated internally by an organization for production business
+    operations, warehouse automation, manufacturing, or commercial 
+    services, even if not directly sold or distributed to third parties.
+
+Commercial Deployment begins when Vectra is incorporated into or used
+by a production system intended for commercial operation or delivery
+to customers or end users.
+
+2.8 "Production"
+
+"Production" means operational use of a system for its intended
+commercial purpose rather than engineering, development, testing,
+evaluation, research, demonstration, or prototyping.
+
+======================================================================
+3. FREE DEVELOPMENT AND EVALUATION RIGHTS
+======================================================================
+
+Subject to the restrictions in this License, the Copyright Holder
+grants You a worldwide, non-exclusive, royalty-free license to:
+
+(a) access and inspect the source code;
+
+(b) download and copy Vectra;
+
+(c) modify Vectra;
+
+(d) compile Vectra;
+
+(e) execute Vectra;
+
+(f) debug Vectra;
+
+(g) benchmark Vectra;
+
+(h) port Vectra to different hardware;
+
+(i) integrate Vectra with other software and hardware for
+    Development;
+
+(j) use Vectra in virtual machines and emulators, including QEMU;
+
+(k) use Vectra for Evaluation;
+
+(l) use Vectra for research and education;
+
+(m) use Vectra for personal projects;
+
+(n) use Vectra for hobby projects;
+
+(o) use Vectra in Prototypes;
+
+(p) distribute copies and modifications of Vectra for the purposes
+    permitted by this Section; and
+
+(q) allow employees, contractors, students, researchers, and other
+    authorized personnel to exercise these rights on Your behalf.
+
+No fee is required for the activities listed in this Section.
+
+======================================================================
+4. COMMERCIAL PRODUCTION DEPLOYMENT
+======================================================================
+
+Commercial Deployment of Vectra is NOT permitted under this License.
+
+You must obtain a separate written commercial license from the
+Copyright Holder before performing Commercial Deployment.
+
+A Commercial Deployment license may authorize, among other things:
+
+(a) production use;
+
+(b) distribution of products containing Vectra;
+
+(c) deployment of Vectra in commercial robots or machines;
+
+(d) deployment of Vectra in embedded products;
+
+(e) deployment of Vectra in products sold to customers;
+
+(f) deployment of Vectra in commercial services; and
+
+(g) other commercial activities agreed upon by the parties.
+
+The terms, fees, duration, deployment limits, hardware limits,
+support obligations, and other conditions of a commercial license
+shall be determined by separate written agreement.
+
+======================================================================
+5. ACTIVITIES THAT DO NOT REQUIRE A COMMERCIAL LICENSE
+======================================================================
+
+The following activities do NOT constitute Commercial Deployment and
+do NOT require payment under this License:
+
+(a) downloading Vectra;
+
+(b) reading or studying the source code;
+
+(c) modifying Vectra;
+
+(d) compiling Vectra;
+
+(e) running Vectra on development hardware;
+
+(f) running Vectra in QEMU or another emulator;
+
+(g) running Vectra in a virtual machine;
+
+(h) porting Vectra to a company's hardware;
+
+(i) developing device drivers for Vectra;
+
+(j) developing hardware support for Vectra;
+
+(k) developing applications for Vectra;
+
+(l) internal engineering;
+
+(m) internal testing;
+
+(n) internal benchmarking;
+
+(o) security testing;
+
+(p) debugging;
+
+(q) academic research;
+
+(r) educational use;
+
+(s) hobbyist use;
+
+(t) proof-of-concept systems;
+
+(u) laboratory systems;
+
+(v) development robots;
+
+(w) prototype robots;
+
+(x) demonstrations performed solely for engineering, research,
+    evaluation, or sales-evaluation purposes; and
+
+(y) determining whether Vectra is suitable for a future commercial
+    product.
+
+An organization may perform the activities above without purchasing
+a commercial license, regardless of whether the organization is a
+commercial entity.
+
+For avoidance of doubt, an employee of a commercial company may
+download, modify, compile, test, and evaluate Vectra as part of their
+engineering work without requiring a commercial license, provided
+that the activities do not constitute Commercial Deployment.
+
+======================================================================
+6. COMMERCIAL DEPLOYMENT EXAMPLES
+======================================================================
+
+The following examples require a commercial license:
+
+(a) shipping a robot containing Vectra to a paying customer;
+
+(b) selling a robot containing Vectra;
+
+(c) leasing a robot containing Vectra;
+
+(d) deploying Vectra in a fleet of production robots operated as a
+    commercial service;
+
+(e) installing Vectra into production equipment sold to customers;
+
+(f) distributing a production device whose operation depends upon
+    Vectra;
+
+(g) using Vectra as part of a commercial product delivered to
+    customers; or
+
+(h) deploying Vectra in a production system for the purpose of
+    generating commercial revenue.
+
+The following examples do NOT require a commercial license:
+
+(a) an engineer downloading Vectra to study the source code;
+
+(b) a company porting Vectra to its ARM64 development board;
+
+(c) an engineer running Vectra in QEMU;
+
+(d) a startup building a prototype robot for testing;
+
+(e) a company benchmarking Vectra against another operating system;
+
+(f) a university using Vectra for research;
+
+(g) an engineer modifying the scheduler;
+
+(h) a company developing a Vectra device driver;
+
+(i) a company testing Vectra on a prototype robot internally; or
+
+(j) an engineer determining whether Vectra is suitable for a future
+    commercial product.
+
+======================================================================
+7. MODIFICATIONS
+======================================================================
+
+You may modify Vectra for any purpose permitted by this License.
+
+Modified versions remain subject to this License unless the
+Copyright Holder provides written permission stating otherwise.
+
+Modification of Vectra does not itself require a commercial license.
+
+However, Commercial Deployment of a modified version of Vectra
+requires a separate commercial license.
+
+======================================================================
+8. DISTRIBUTION
+======================================================================
+
+You may distribute original or modified copies of Vectra for the
+purposes permitted by this License.
+
+Any permitted distribution must:
+
+(a) include a copy of this License;
+
+(b) retain all applicable copyright notices;
+
+(c) clearly identify substantial modifications where reasonably
+    necessary to distinguish them from the original Vectra source; and
+
+(d) not falsely represent the modified software as an official
+    release of Vectra.
+
+Distribution of Vectra as part of a Commercial Deployment requires a
+separate commercial license.
+
+======================================================================
+9. NO AUTOMATIC COMMERCIAL RIGHTS
+======================================================================
+
+Receiving, downloading, modifying, compiling, or possessing Vectra
+does not grant any right to perform Commercial Deployment.
+
+Commercial Deployment rights exist only when granted through a
+separate written commercial license issued by the Copyright Holder.
+
+======================================================================
+10. COMMERCIAL LICENSES
+======================================================================
+
+The Copyright Holder may offer commercial licenses to individuals,
+companies, organizations, manufacturers, OEMs, integrators, and other
+entities.
+
+A commercial license may contain terms different from this License,
+including but not limited to:
+
+(a) license fees;
+
+(b) royalties;
+
+(c) per-device fees;
+
+(d) per-unit deployment limits;
+
+(e) geographic restrictions;
+
+(f) hardware restrictions;
+
+(g) support requirements;
+
+(h) maintenance terms;
+
+(i) warranty terms;
+
+(j) service-level agreements;
+
+(k) long-term support arrangements;
+
+(l) certification assistance; and
+
+(m) custom engineering arrangements.
+
+The Copyright Holder may negotiate different commercial terms with
+different licensees.
+
+======================================================================
+11. NO TRADEMARK LICENSE
+======================================================================
+
+This License does not grant any rights to use the name "Vectra" or
+any Vectra trademarks, logos, service marks, or other branding.
+
+Modified versions may not represent themselves as official Vectra
+releases without written permission from the Copyright Holder.
+
+======================================================================
+12. PATENTS
+======================================================================
+
+No patent license is granted under this License.
+
+Any patent rights held by the Copyright Holder are reserved unless
+expressly granted under a separate written agreement.
+
+======================================================================
+13. THIRD-PARTY SOFTWARE
+======================================================================
+
+Vectra may contain or interact with software distributed under
+separate licenses.
+
+Such third-party software remains subject to its applicable license.
+
+Nothing in this License overrides the license terms of third-party
+software.
+
+======================================================================
+14. SAFETY
+======================================================================
+
+Vectra is provided for engineering and development purposes.
+
+Vectra is not represented or warranted to be suitable for any
+particular safety-critical application.
+
+Users are solely responsible for determining whether Vectra is
+appropriate for their application and for implementing appropriate
+safety mechanisms.
+
+======================================================================
+15. DISCLAIMER OF WARRANTY
+======================================================================
+
+VECTRA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT,
+CORRECTNESS, RELIABILITY, AVAILABILITY, OR PERFORMANCE.
+
+======================================================================
+16. LIMITATION OF LIABILITY
+======================================================================
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE COPYRIGHT
+HOLDER SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR OTHER DAMAGES ARISING FROM OR
+RELATED TO VECTRA OR THIS LICENSE.
+
+======================================================================
+17. TERMINATION
+======================================================================
+
+The rights granted by this License terminate automatically if You
+materially violate the terms of this License.
+
+Upon termination, You must cease exercising the rights granted by
+this License, except to the extent that applicable law provides
+otherwise.
+
+Termination does not affect rights already granted to third parties
+in accordance with this License before termination.
+
+======================================================================
+18. COMMERCIAL LICENSE OVERRIDE
+======================================================================
+
+A separate written commercial license issued by the Copyright Holder
+may grant rights not available under this License.
+
+If the terms of a commercial license conflict with this License, the
+commercial license controls with respect to the rights expressly
+granted by that commercial license.
+
+======================================================================
+19. RESERVATION OF RIGHTS
+======================================================================
+
+All rights not expressly granted by this License are reserved by the
+Copyright Holder.
+
+======================================================================
+20. CONTACT
+======================================================================
+
+Commercial licensing inquiries:
+
+DRIFTLESS SOFTWARE
+
+Email:
+driftlesssoftware@gmail.com
+
+Website:
+https://driftlessblog.netlify.app/
+
+======================================================================
+
+END OF VECTRA SOURCE-AVAILABLE LICENSE
