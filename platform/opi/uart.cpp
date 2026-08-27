@@ -17,7 +17,7 @@
 
 #define UART2_BASE 0xFE660000
 #define UART_THR   (*(volatile unsigned int *)(UART2_BASE + 0x00))
-#define UART_LSR   (*(volatile unsigned int *)(UART2_BASE + 0x18))
+#define UART_LSR   (*(volatile unsigned int *)(UART2_BASE + 0x14))
 
 void uart_putc(char c) 
 {
