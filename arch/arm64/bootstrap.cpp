@@ -24,6 +24,10 @@ extern "C" void boot_main(void)
     klog_info("boot", "starting Vectra Kernel");
     klog_info("cpu", "running at EL%d", cpu_get_el_num());
 
+    interrupts_init();
+    //test
+    //asm("udf #0xdead");
+
     kernel_main();
     while (1);
 }

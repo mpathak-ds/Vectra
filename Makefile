@@ -9,7 +9,7 @@ OBJCOPY       := $(CROSS_COMPILE)objcopy
 QEMU          := qemu-system-aarch64
 
 # Flags
-COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -mgeneral-regs-only -fno-stack-protector -fno-threadsafe-statics -fno-use-cxa-atexit
+COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -mgeneral-regs-only -fno-stack-protector -fno-threadsafe-statics -fno-use-cxa-atexit -g
 CFLAGS        := $(COMMON_FLAGS)
 CXXFLAGS      := $(COMMON_FLAGS) -fno-exceptions -fno-rtti -Iinclude
 LDFLAGS       := -T arch/arm64/link.ld -nostdlib

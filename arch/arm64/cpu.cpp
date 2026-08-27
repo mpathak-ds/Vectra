@@ -17,9 +17,14 @@
 #include <boot/cpu.hpp>
 
 //x0 are used in these functions as the convention uses that for first arg
-void cpu_set_vbar(uint64_t val)
+void cpu_set_vbar_el1(uint64_t val)
 {
     asm("msr vbar_el1, x0");
+}
+
+void cpu_set_vbar_el2(uint64_t val)
+{
+    asm("msr vbar_el2, x0");
 }
 
 void cpu_set_vaif(uint64_t val)
@@ -40,4 +45,32 @@ uint64_t cpu_get_el()
 uint64_t cpu_get_el_num()
 {
     return cpu_get_el() >> 2;
+}
+
+uint64_t read_esr_el2()
+{
+    uint64_t v;
+    asm volatile("mrs %0, esr_el2" : "=r"(v));
+    return v;
+}
+
+uint64_t read_elr_el2()
+{
+    uint64_t v;
+    asm volatile("mrs %0, elr_el2" : "=r"(v));
+    return v;
+}
+
+uint64_t read_esr_el1()
+{
+    uint64_t v;
+    asm volatile("mrs %0, esr_el1" : "=r"(v));
+    return v;
+}
+
+uint64_t read_elr_el1()
+{
+    uint64_t v;
+    asm volatile("mrs %0, elr_el1" : "=r"(v));
+    return v;
 }

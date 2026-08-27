@@ -18,10 +18,18 @@
 
 #include <osdef.hpp>
 
-void cpu_set_vbar(uint64_t val);
+void cpu_set_vbar_el1(uint64_t val);
+void cpu_set_vbar_el2(uint64_t val);
 void cpu_set_vaif(uint64_t val);
 
 uint64_t cpu_get_el();
 uint64_t cpu_get_el_num();
+
+uint64_t read_esr_el2();
+uint64_t read_elr_el2();
+uint64_t read_esr_el1();
+uint64_t read_elr_el1();
+
+void interrupts_init(void);
 
 #endif
