@@ -18,6 +18,21 @@
 #include <drivers/gic.hpp>
 #include <libkern/klog.hpp>
 
+uint64_t ticks;
+
+static int32_t timer_handler(arm64_registers_t *regs)
+{
+    uint64_t freq, calculated_freq;
+
+    freq = timer_get_core_frequency();
+    calculated_freq = freq / TIMER_FREQ;
+    timer_set_frequency(calculated_freq);
+
+    klog_debug("timer", "interrupt");
+
+    return 0;
+}
+
 uint64_t timer_get_core_frequency()
 {
     uint64_t freq;
@@ -54,6 +69,7 @@ void timer_init()
 
     timer_set_frequency(calculated_freq);
     timer_enable();
+    gic_register_interrupt_handler(TIMER_IRQ_ID, timer_handler);
     interrupts_enable();
     gic_enable_interrupt(TIMER_IRQ_ID);
     gic_set_interrupt_priority(TIMER_IRQ_ID, GIC_PRIORITY_MEDIUM);

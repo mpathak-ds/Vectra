@@ -17,6 +17,7 @@
 #define KERN_GIC_H
 
 #include <osdef.hpp>
+#include <boot/cpu.hpp>
 
 #define GIC_MAX_IRQS         0xFF
 
@@ -31,8 +32,10 @@
 #define GIC_PRODUCT_GIC_400  0x002
 #define GIC_IMPLEMENTER_ARM  0x43B
 
+void gic_register_interrupt_handler(uint8_t irq, interrupt_handler_t handler);
 void gic_enable_interrupt(uint8_t irq);
 void gic_set_interrupt_priority(uint8_t irq, uint8_t priority);
+void gic_redirect_irq(uint8_t irq);
 void gic_allow_interrupts();
 
 void gic_init();

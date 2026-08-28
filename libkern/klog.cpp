@@ -28,6 +28,7 @@ static const char *level_name(KLogLevel level)
         case KLogLevel::Warning:  return COLOR_YELLOW "[warning]" COLOR_RESET;
         case KLogLevel::Error:    return COLOR_RED "[error]" COLOR_RESET;
         case KLogLevel::Critical: return COLOR_RED "[critical]" COLOR_RESET;
+        case KLogLevel::Panic:    return COLOR_RED "[panic]" COLOR_RESET;
     }
 
     return "unknown ";
@@ -204,19 +205,19 @@ DEFINE_KLOG_FUNCTION(klog_warn,     KLogLevel::Warning)
 DEFINE_KLOG_FUNCTION(klog_error,    KLogLevel::Error)
 DEFINE_KLOG_FUNCTION(klog_critical, KLogLevel::Critical)
 DEFINE_KLOG_FUNCTION(klog_debug,    KLogLevel::Debug)
+DEFINE_KLOG_FUNCTION(klog_panic,    KLogLevel::Panic)
 
 #undef DEFINE_KLOG_FUNCTION
 
 void panic(const char *subsystem,
           const char *format, ...)
 {
-    uart_puts("[    0.000] ");
-    uart_puts(level_name(KLogLevel::Critical));
+    uart_puts(level_name(KLogLevel::Panic));
     uart_puts(" ");
-    uart_puts("\033[1;33m");
+    uart_puts(COLOR_MAGENTA);
     uart_puts(subsystem);
-    uart_puts("\033[0m");
-    uart_puts("[PANIC]: ");
+    uart_puts(COLOR_RESET);
+    uart_puts(": ");
 
     va_list args;
     va_start(args, format);
@@ -227,7 +228,7 @@ void panic(const char *subsystem,
 
     arm64_registers_t *regs = dump_registers();
 
-    klog_critical("cpu", 
+    klog_panic("cpu", 
         "x0 =0x%x  x1 =0x%x "
         "x2 =0x%x  x3 =0x%x\n"
         "x4 =0x%x  x5 =0x%x "

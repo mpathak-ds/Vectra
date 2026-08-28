@@ -34,7 +34,8 @@ enum class KLogLevel {
     Notice,
     Warning,
     Error,
-    Critical
+    Critical,
+    Panic
 };
 
 void klog_init();

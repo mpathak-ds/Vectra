@@ -7,38 +7,8 @@
 .extern interrupt_exception_handler
 
 //128 byte alignment macro
-.macro vector label
+.macro vector name, type
     .p2align 7
-    b \label
-.endm
-
-enable_exceptions:
-    msr daif, xzr //unmask all
-    ret
-
-.p2align 11
-vectors:
-    vector vector_entry_stub
-    vector vector_entry_stub
-    vector vector_entry_stub
-    vector vector_entry_stub
-
-    vector vector_entry_stub
-    vector vector_entry_stub
-    vector vector_entry_stub
-    vector vector_entry_stub
-
-    vector vector_entry_stub
-    vector vector_entry_stub
-    vector vector_entry_stub
-    vector vector_entry_stub
-
-    vector vector_entry_stub
-    vector vector_entry_stub
-    vector vector_entry_stub
-    vector vector_entry_stub
-
-vector_entry_stub:
     //preserve registers
     sub sp, sp, #256
 
@@ -62,9 +32,10 @@ vector_entry_stub:
     add x0, sp, #256
     str x0, [sp, #248]
 
-    mov x0, sp
+    mov x0, \type
+    mov x1, sp
 
-    bl interrupt_exception_handler //handler in CPP
+    bl interrupt_exception_handler   
 
     ldr x30,      [sp, #240]
     ldp x28, x29, [sp, #224]
@@ -86,3 +57,30 @@ vector_entry_stub:
     add sp, sp, #256
 
     eret //similar to intel iret
+.endm
+
+enable_exceptions:
+    msr daif, xzr //unmask all
+    ret
+
+.p2align 11
+vectors:
+    vector vector_entry_stub, 1
+    vector vector_entry_stub, 2
+    vector vector_entry_stub, 3
+    vector vector_entry_stub, 4
+
+    vector vector_entry_stub, 1
+    vector vector_entry_stub, 2
+    vector vector_entry_stub, 3
+    vector vector_entry_stub, 4
+
+    vector vector_entry_stub, 1
+    vector vector_entry_stub, 2
+    vector vector_entry_stub, 3
+    vector vector_entry_stub, 4
+
+    vector vector_entry_stub, 1
+    vector vector_entry_stub, 2
+    vector vector_entry_stub, 3
+    vector vector_entry_stub, 4
