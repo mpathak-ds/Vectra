@@ -167,7 +167,9 @@ void klog(KLogLevel level,
     uart_puts("[    0.000] ");
     uart_puts(level_name(level));
     uart_puts(" ");
+    uart_puts("\033[1;33m");
     uart_puts(subsystem);
+    uart_puts("\033[0m");
     uart_puts(": ");
 
     va_list args;
@@ -187,7 +189,9 @@ void name(const char *subsystem, const char *format, ...) \
     uart_puts("[    0.000] ");                  \
     uart_puts(level_name(level));               \
     uart_puts(" ");                             \
+    uart_puts("\033[1;33m");                    \
     uart_puts(subsystem);                       \
+    uart_puts("\033[0m");                       \
     uart_puts(": ");                            \
     klog_vprintf(format, args);                 \
     uart_puts("\n");                            \

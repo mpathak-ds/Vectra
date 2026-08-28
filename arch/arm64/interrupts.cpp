@@ -20,7 +20,7 @@
 
 extern "C" void enable_exceptions(void);
 extern "C" void vectors(void); //declaring it as a function gives you the address pointer
-extern "C" void interrupt_exception_handler();
+extern "C" void interrupt_exception_handler(arm64_registers_t regs);
 
 void interrupts_set_vbar(uint64_t val)
 {
@@ -37,6 +37,11 @@ void interrupts_set_vbar(uint64_t val)
     }
 }
 
+void interrupts_enable(void)
+{
+    asm("msr daifclr, #2");
+}
+
 void interrupts_init(void)
 {
     //initialize exceptions first
@@ -45,7 +50,7 @@ void interrupts_init(void)
     enable_exceptions();
 }
 
-extern "C" void interrupt_exception_handler()
+extern "C" void interrupt_exception_handler(arm64_registers_t regs)
 {
     uint32_t el = cpu_get_el_num();
     uint64_t esr = 0;
@@ -59,7 +64,34 @@ extern "C" void interrupt_exception_handler()
         elr = read_elr_el2();
     }
 
-    klog_critical("cpu", "EL%d EXCEPTION: ESR=0x%x ELR=0x%x", el, esr, elr);
+    klog_critical("cpu", 
+        "EL%d EXCEPTION: ESR=0x%x, ELR=0x%x\n"
+        "x0 =0x%x  x1 =0x%x "
+        "x2 =0x%x  x3 =0x%x\n"
+        "x4 =0x%x  x5 =0x%x "
+        "x6 =0x%x  x7 =0x%x\n"
+        "x8 =0x%x  x9 =0x%x "
+        "x10=0x%x  x11=0x%x\n"
+        "x12=0x%x  x13=0x%x "
+        "x14=0x%x  x15=0x%x\n"
+        "x16=0x%x  x17=0x%x "
+        "x18=0x%x  x19=0x%x\n"
+        "x20=0x%x  x21=0x%x "
+        "x22=0x%x  x23=0x%x\n"
+        "x24=0x%x  x25=0x%x "
+        "x26=0x%x  x27=0x%x\n"
+        "x28=0x%x  fp =0x%x "
+        "lr =0x%x  sp =0x%x", 
+        el, esr, elr,
+        regs.x0,  regs.x1,  regs.x2,  regs.x3,
+        regs.x4,  regs.x5,  regs.x6,  regs.x7,
+        regs.x8,  regs.x9,  regs.x10, regs.x11,
+        regs.x12, regs.x13, regs.x14, regs.x15,
+        regs.x16, regs.x17, regs.x18, regs.x19,
+        regs.x20, regs.x21, regs.x22, regs.x23,
+        regs.x24, regs.x25, regs.x26, regs.x27,
+        regs.x28, regs.x29, regs.lr,  regs.sp
+    );
 
     for (;;) asm volatile("wfe");
 }

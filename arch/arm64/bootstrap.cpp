@@ -15,6 +15,8 @@
 
 #include <osdef.hpp>
 #include <boot/cpu.hpp>
+#include <drivers/timer.hpp>
+#include <drivers/gic.hpp>
 #include <libkern/klog.hpp>
 
 void kernel_main(void);
@@ -26,7 +28,8 @@ extern "C" void boot_main(void)
 
     interrupts_init();
     //test
-    //asm("udf #0xdead");
+    gic_init();
+    timer_init();
 
     kernel_main();
     while (1);
