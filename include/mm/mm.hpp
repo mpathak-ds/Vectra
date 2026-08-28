@@ -18,7 +18,17 @@
 
 #include <osdef.hpp>
 
+#define PAGE_SIZE 4096
+#define PAGE_SHIFT 12
+#define BITMAP_BIT_SIZE 8
+
 extern "C" void mm_boot_init(boot_info_t *boot_info);
 void *mm_boot_alloc(uint64_t size);
+
+extern "C" void pmm_init(uintptr_t ram_base, uint64_t ram_size);
+void pmm_free_region(uintptr_t base, uint64_t size);
+void pmm_reserve_region(uintptr_t base, uint64_t size);
+uintptr_t pmm_alloc_frame(void);
+void pmm_free_frame(uintptr_t phys_addr);
 
 #endif

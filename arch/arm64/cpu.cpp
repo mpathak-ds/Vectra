@@ -79,3 +79,17 @@ void halt()
 {
     for (;;) asm volatile("wfe");
 }
+
+uint64_t cpu_get_membase()
+{
+#ifdef MACHINE_OPI
+    return 0x00200000;
+#else
+    return 0x40080000;
+#endif
+}
+
+uint64_t cpu_get_memsize()
+{
+    return MACHINE_RAM_SIZE; //hardcoded... 128mb
+}

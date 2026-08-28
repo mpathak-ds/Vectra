@@ -43,6 +43,9 @@ uint64_t read_elr_el2();
 uint64_t read_esr_el1();
 uint64_t read_elr_el1();
 
+uint64_t cpu_get_membase();
+uint64_t cpu_get_memsize();
+
 void interrupts_enable();
 void interrupts_init();
 

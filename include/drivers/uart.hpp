@@ -16,9 +16,6 @@
 #ifndef KERN_UART_H
 #define KERN_UART_H
 
-#define MACHINE_QEMU_VIRT
-//#define MACHINE_OPI
-
 extern "C" void uart_putc(char c) ;
 void uart_puts(const char *s);
 

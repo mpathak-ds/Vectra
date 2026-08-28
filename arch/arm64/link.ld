@@ -8,6 +8,8 @@ SECTIONS
     . = 0x40080000;
     #endif
 
+    __text_start = .;
+
     .text : ALIGN(8) {
         KEEP(*(.text.boot))
         *(.text*)

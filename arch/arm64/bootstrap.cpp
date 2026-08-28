@@ -21,6 +21,7 @@
 
 extern "C" char __heap_start[];
 extern "C" char __heap_end[];
+extern "C" char __text_start[];
 
 void kernel_main(boot_info_t *boot_info);
 
@@ -39,6 +40,9 @@ extern "C" void boot_main(void)
 
     early_info.early_heap_start = (uint8_t *)__heap_start;
     early_info.early_heap_end = (uint8_t *)__heap_end;
+    early_info.kernel_image_start = (uint8_t*)__text_start;
+    early_info.machine_ram_base = cpu_get_membase();
+    early_info.machine_ram_total = cpu_get_memsize();
     
     kernel_main(&early_info);
     while (1);
