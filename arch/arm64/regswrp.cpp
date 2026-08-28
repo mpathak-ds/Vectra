@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: include/drivers/timer.hpp
+ * Path: arch/arm64/regs.cpp
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -13,24 +13,14 @@
  * Author: Daniil Dunaeff (dan7)
  */
 
-#ifndef KERN_TIMER_H
-#define KERN_TIMER_H
+#include <boot/cpu.hpp>
+#include <libkern/klog.hpp>
+#include <libkern/string.hpp>
 
-#include <osdef.hpp>
+arm64_registers_t regframe;
 
-#define TIMER_IRQ_ID 30
-#define TIMER_FREQ   100
-
-#define TO_MHZ(hz)   ((hz) / 1000000)
-#define TO_KHZ(hz)   ((hz) / 1000)
-
-#define TIMER_ENABLE 0x01
-
-uint64_t timer_get_core_frequency();
-void timer_set_frequency(uint64_t freq);
-
-void timer_enable();
-
-void timer_init();
-
-#endif
+extern "C" arm64_registers_t *regs_dump(arm64_registers_t *regs)
+{
+    memcpy(&regframe, &regs, sizeof(arm64_registers_t));
+    return &regframe;
+}

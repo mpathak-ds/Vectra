@@ -74,3 +74,8 @@ uint64_t read_elr_el1()
     asm volatile("mrs %0, elr_el1" : "=r"(v));
     return v;
 }
+
+void halt()
+{
+    for (;;) asm volatile("wfe");
+}

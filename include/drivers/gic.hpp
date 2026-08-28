@@ -18,6 +18,8 @@
 
 #include <osdef.hpp>
 
+#define GIC_MAX_IRQS         0xFF
+
 #define GIC_ENABLE_GRP0      0x01
 #define GIC_ENABLE_GRP1      0x02
 
@@ -31,8 +33,8 @@
 
 void gic_enable_interrupt(uint8_t irq);
 void gic_set_interrupt_priority(uint8_t irq, uint8_t priority);
-void gic_allow_interrupts(void);
+void gic_allow_interrupts();
 
-void gic_init(void);
+void gic_init();
 
 #endif

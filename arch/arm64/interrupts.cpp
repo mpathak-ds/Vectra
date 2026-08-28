@@ -20,7 +20,7 @@
 
 extern "C" void enable_exceptions(void);
 extern "C" void vectors(void); //declaring it as a function gives you the address pointer
-extern "C" void interrupt_exception_handler(arm64_registers_t regs);
+extern "C" void interrupt_exception_handler(arm64_registers_t *regs);
 
 void interrupts_set_vbar(uint64_t val)
 {
@@ -50,7 +50,7 @@ void interrupts_init(void)
     enable_exceptions();
 }
 
-extern "C" void interrupt_exception_handler(arm64_registers_t regs)
+extern "C" void interrupt_exception_handler(arm64_registers_t *regs)
 {
     uint32_t el = cpu_get_el_num();
     uint64_t esr = 0;
@@ -83,14 +83,14 @@ extern "C" void interrupt_exception_handler(arm64_registers_t regs)
         "x28=0x%x  fp =0x%x "
         "lr =0x%x  sp =0x%x", 
         el, esr, elr,
-        regs.x0,  regs.x1,  regs.x2,  regs.x3,
-        regs.x4,  regs.x5,  regs.x6,  regs.x7,
-        regs.x8,  regs.x9,  regs.x10, regs.x11,
-        regs.x12, regs.x13, regs.x14, regs.x15,
-        regs.x16, regs.x17, regs.x18, regs.x19,
-        regs.x20, regs.x21, regs.x22, regs.x23,
-        regs.x24, regs.x25, regs.x26, regs.x27,
-        regs.x28, regs.x29, regs.lr,  regs.sp
+        regs->x0,  regs->x1,  regs->x2,  regs->x3,
+        regs->x4,  regs->x5,  regs->x6,  regs->x7,
+        regs->x8,  regs->x9,  regs->x10, regs->x11,
+        regs->x12, regs->x13, regs->x14, regs->x15,
+        regs->x16, regs->x17, regs->x18, regs->x19,
+        regs->x20, regs->x21, regs->x22, regs->x23,
+        regs->x24, regs->x25, regs->x26, regs->x27,
+        regs->x28, regs->x29, regs->lr,  regs->sp
     );
 
     for (;;) asm volatile("wfe");

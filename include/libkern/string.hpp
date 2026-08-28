@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: include/drivers/timer.hpp
+ * Path: include/libkern/framework.hpp
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -13,24 +13,15 @@
  * Author: Daniil Dunaeff (dan7)
  */
 
-#ifndef KERN_TIMER_H
-#define KERN_TIMER_H
+#ifndef KERN_STRING_H
+#define KERN_STRING_H
 
 #include <osdef.hpp>
 
-#define TIMER_IRQ_ID 30
-#define TIMER_FREQ   100
-
-#define TO_MHZ(hz)   ((hz) / 1000000)
-#define TO_KHZ(hz)   ((hz) / 1000)
-
-#define TIMER_ENABLE 0x01
-
-uint64_t timer_get_core_frequency();
-void timer_set_frequency(uint64_t freq);
-
-void timer_enable();
-
-void timer_init();
+void *memcpy(void *__restrict__ dest, const void *__restrict__ src, size_t n);
+void *memset(void *s, int c, size_t n);
+void *memmove(void *dest, const void *src, size_t n);
+int memcmp(const void *s1, const void *s2, size_t n);
+size_t strlen(const char *str);
 
 #endif

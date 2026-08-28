@@ -64,7 +64,6 @@ vector_entry_stub:
 
     mov x0, sp
 
-
     bl interrupt_exception_handler //handler in CPP
 
     ldr x30,      [sp, #240]

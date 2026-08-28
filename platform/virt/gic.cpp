@@ -14,6 +14,7 @@
  */
 
 #include <drivers/gic.hpp>
+#include <boot/cpu.hpp>
 #include <libkern/framework.hpp>
 #include <libkern/klog.hpp>
 
@@ -23,6 +24,7 @@
 #define GICC_BASE 0x08010000
 
 #define GICD_CTLR            0x000
+#define GICD_TYPER           0x004
 #define GICD_IIDR            0x008
 #define GICD_ISENABLER(n)    (0x100 + (n) * 4)
 #define GICD_IPRIORITYR(n)   (0x400 + (n) * 4)
@@ -31,6 +33,43 @@
 #define GICC_PMR             0x004
 #define GICC_IAR             0x00C
 #define GICC_EOIR            0x010
+
+static interrupt_handler_t gic_handlers[GIC_MAX_IRQS];
+
+static uint32_t gicc_iar = 0;
+
+//PRIVATE FUNCTIONS
+
+static inline uint32_t gic_interrupt_ack()
+{
+    gicc_iar = io_read32(GICC_BASE, GICC_IAR);
+    //extract irq id
+    return gicc_iar & 0x3FF;
+}
+
+static inline void gic_eoi()
+{
+    io_write32(GICC_BASE, GICC_EOIR, gicc_iar);
+}
+
+//PUBLIC FUNCTIONS
+
+//must be used only in exception handler
+void gic_handle_interrupts(arm64_registers_t *regs)
+{
+    uint32_t irq_id = gic_interrupt_ack();
+    int32_t ret;
+
+    if (gic_handlers[irq_id]) {
+        ret = gic_handlers[irq_id](regs);
+    } else {
+        ret = -1;
+    }
+
+    if (ret == -1) {
+        panic("gic", "interrupt handler exited with error");
+    }
+}
 
 void gic_enable_interrupt(uint8_t irq)
 {
@@ -47,16 +86,17 @@ void gic_set_interrupt_priority(uint8_t irq, uint8_t priority)
     io_write32(GICD_BASE, GICD_IPRIORITYR(irq / 4), prio);
 }
 
-void gic_allow_interrupts(void)
+void gic_allow_interrupts()
 {
     io_write32(GICC_BASE, GICC_PMR, GIC_PRIORITY_ALL);
 }
 
-void gic_init(void)
+void gic_init()
 {
-    uint64_t gicd_ctlr;
-    uint64_t gicc_ctlr;
-    uint64_t gicd_iidr;
+    uint32_t gicd_ctlr;
+    uint32_t gicc_ctlr;
+    uint32_t gicd_iidr;
+    uint32_t gicd_typer;
 
     gicd_ctlr = io_read32(GICD_BASE, GICD_CTLR);
     gicd_ctlr |= GIC_ENABLE_GRP0;
@@ -66,9 +106,10 @@ void gic_init(void)
     io_write32(GICC_BASE, GICC_CTLR, gicc_ctlr);
 
     gicd_iidr = io_read32(GICD_BASE, GICD_IIDR);
+    gicd_typer = io_read32(GICD_BASE, GICD_TYPER);
 
-    klog_info("gic", "GIC model is %s, implementer %s", ((gicd_iidr >> 24) & 0x03) == GIC_PRODUCT_GIC_400 ? "GIC-400" : "Unknown", 
-        (gicd_iidr & 0xfff) == GIC_IMPLEMENTER_ARM ? "ARM" : "Unknown");
+    klog_info("gic", "GIC model is %s, implementer %s, %d max irqs", ((gicd_iidr >> 24) & 0x03) == GIC_PRODUCT_GIC_400 ? "GIC-400" : "Unknown", 
+        (gicd_iidr & 0xfff) == GIC_IMPLEMENTER_ARM ? "ARM" : "Unknown", (32 * ((gicd_typer & 0x1F) + 1)));
 
     gic_allow_interrupts();
 }

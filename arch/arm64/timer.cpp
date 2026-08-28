@@ -18,7 +18,7 @@
 #include <drivers/gic.hpp>
 #include <libkern/klog.hpp>
 
-uint64_t timer_get_core_frequency(void)
+uint64_t timer_get_core_frequency()
 {
     uint64_t freq;
 
@@ -32,25 +32,25 @@ void timer_set_frequency(uint64_t freq)
     asm("msr cntp_tval_el0, %0" : : "r"(freq));
 }
 
-void timer_enable(void)
+void timer_enable()
 {
     uint64_t value;
 
     asm("mrs %0, cntp_ctl_el0" : "=r"(value));
 
-    value |= 0x01;
+    value |= TIMER_ENABLE;
 
     asm("msr cntp_ctl_el0, %0" : : "r"(value));
 }
 
-void timer_init(void)
+void timer_init()
 {
     uint64_t freq, calculated_freq;
 
     freq = timer_get_core_frequency();
-    calculated_freq = freq / 1000;
+    calculated_freq = freq / TIMER_FREQ;
 
-    klog_info("timer", "core frequency: %d kHz, setting timer frequency to %d ms", TO_KHZ(freq), calculated_freq);
+    klog_info("timer", "core frequency: %d kHz", TO_KHZ(freq));
 
     timer_set_frequency(calculated_freq);
     timer_enable();
