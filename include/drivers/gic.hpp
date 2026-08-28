@@ -19,18 +19,21 @@
 #include <osdef.hpp>
 #include <boot/cpu.hpp>
 
-#define GIC_MAX_IRQS         0xFF
+#define GIC_MAX_IRQS           0xFF
 
-#define GIC_ENABLE_GRP0      0x01
-#define GIC_ENABLE_GRP1      0x02
+#define GIC_ENABLE_GRP0        0x01
+#define GIC_ENABLE_GRP1        0x02
 
-#define GIC_PRIORITY_ALL     0xFF
-#define GIC_PRIORITY_HIGHEST 0x80
-#define GIC_PRIORITY_MEDIUM  0xA0
-#define GIC_PRIORITY_LOW     0xF0
+#define GIC_PRIORITY_ALL       0xFF
+#define GIC_PRIORITY_HIGHEST   0x80
+#define GIC_PRIORITY_MEDIUM    0xA0
+#define GIC_PRIORITY_LOW       0xF0
 
-#define GIC_PRODUCT_GIC_400  0x002
-#define GIC_IMPLEMENTER_ARM  0x43B
+#define GIC_PRODUCT_GIC_400    0x002
+#define GIC_IMPLEMENTER_ARM    0x43B
+
+#define GIC_UNKNOWN_INTERRUPT  1022
+#define GIC_SPURIOUS_INTERRUPT 1023
 
 void gic_register_interrupt_handler(uint8_t irq, interrupt_handler_t handler);
 void gic_enable_interrupt(uint8_t irq);

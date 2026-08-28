@@ -60,7 +60,9 @@ void gic_handle_interrupts(arm64_registers_t *regs)
     uint32_t irq_id = gic_interrupt_ack();
     int32_t ret;
 
-    klog_info("gic", "interrupt %d", irq_id);
+    if (irq_id == GIC_SPURIOUS_INTERRUPT) {
+        return;
+    }
 
     if (gic_handlers[irq_id]) {
         ret = gic_handlers[irq_id](regs);
