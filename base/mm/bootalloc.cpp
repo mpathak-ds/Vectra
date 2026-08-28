@@ -38,13 +38,13 @@ extern "C" void mm_boot_init(boot_info_t *boot_info)
 void *mm_boot_alloc(uint64_t size)
 {
     if (!boot_heap_ptr) {
-        klog_critical("mm", "uninitialized boot heap");
+        panic("mm", "uninitialized boot heap");
         return NULL;
     }
 
     size = ALIGN_UP(size, 16);
     if (boot_heap_ptr + size > boot_heap_end) {
-        panic("boot heap ran out of memory");
+        panic("mm", "boot heap ran out of memory");
         return NULL;
     }
 

@@ -24,7 +24,7 @@ void kernel_main(boot_info_t *boot_info)
 
     //test block, remove later
     void *test_ptr = mm_boot_alloc(128);
-    if (!test_ptr) panic("boot alloc test failed");
+    if (!test_ptr) panic("kern", "boot alloc test failed");
 
     klog_info("kern", "alloc successful at 0x%x", test_ptr);
 
