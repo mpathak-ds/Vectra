@@ -19,7 +19,12 @@
 #include <drivers/gic.hpp>
 #include <libkern/klog.hpp>
 
-void kernel_main(void);
+extern "C" char __heap_start[];
+extern "C" char __heap_end[];
+
+void kernel_main(boot_info_t *boot_info);
+
+static boot_info_t early_info;
 
 extern "C" void boot_main(void)
 {
@@ -27,10 +32,14 @@ extern "C" void boot_main(void)
     klog_info("cpu", "running in EL%d mode", cpu_get_el_num());
 
     interrupts_init();
-    //test
     gic_init();
     timer_init();
 
-    kernel_main();
+    klog_info("boot", "found boot heap to be : start=0x%x, end=0x%x", (uint8_t *)__heap_start, (uint8_t *)__heap_end);
+
+    early_info.early_heap_start = (uint8_t *)__heap_start;
+    early_info.early_heap_end = (uint8_t *)__heap_end;
+    
+    kernel_main(&early_info);
     while (1);
 }

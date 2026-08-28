@@ -9,10 +9,10 @@ OBJCOPY       := $(CROSS_COMPILE)objcopy
 QEMU          := qemu-system-aarch64
 
 # Flags
-COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -mgeneral-regs-only -fno-stack-protector -fno-threadsafe-statics -fno-use-cxa-atexit -g
-CFLAGS        := $(COMMON_FLAGS)
-CXXFLAGS      := $(COMMON_FLAGS) -fno-exceptions -fno-rtti -Iinclude
-LDFLAGS       := -T arch/arm64/link.ld -nostdlib
+COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -mgeneral-regs-only -fno-stack-protector -fno-threadsafe-statics -fno-use-cxa-atexit #-g
+CFLAGS        := $(COMMON_FLAGS) $(CPPFLAGS)
+CXXFLAGS      := $(COMMON_FLAGS) -fno-exceptions -fno-rtti -Iinclude $(CPPFLAGS)
+LDFLAGS       := -T arch/arm64/link.ld -nostdlib $(CPPFLAGS)
 
 ifeq ($(PLATFORM),opi)
     CPPFLAGS += -DMACHINE_OPI
@@ -24,14 +24,14 @@ BUILD_DIR     := build
 # Source Files
 ARCH_ASM_SRCS := $(wildcard arch/arm64/*.S)
 ARCH_CPP_SRCS := $(wildcard arch/arm64/*.cpp)
-BASE_SRCS     := $(wildcard base/*.cpp)
+BASE_SRCS     := $(shell find base -type f -name "*.cpp")
 PLATFORM_SRCS := $(wildcard platform/$(PLATFORM)/*.cpp)
 LIBKERN_SRCS  := $(wildcard libkern/*.cpp)
 
 # Object Files
 ARCH_ASM_OBJS := $(patsubst arch/arm64/%.S, $(BUILD_DIR)/arch_%.o, $(ARCH_ASM_SRCS))
 ARCH_CPP_OBJS := $(patsubst arch/arm64/%.cpp, $(BUILD_DIR)/arch_%.o, $(ARCH_CPP_SRCS))
-BASE_OBJS     := $(patsubst base/%.cpp, $(BUILD_DIR)/base_%.o, $(BASE_SRCS))
+BASE_OBJS     := $(patsubst base/%.cpp, $(BUILD_DIR)/base/%.o, $(BASE_SRCS))
 PLATFORM_OBJS := $(patsubst platform/$(PLATFORM)/%.cpp, $(BUILD_DIR)/plat_%.o, $(PLATFORM_SRCS))
 LIBKERN_OBJS  := $(patsubst libkern/%.cpp, $(BUILD_DIR)/libkern_%.o, $(LIBKERN_SRCS))
 
@@ -63,8 +63,8 @@ $(BUILD_DIR)/arch_%.o: arch/arm64/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Compile Base C++ Sources
-$(BUILD_DIR)/base_%.o: base/%.cpp
-	@mkdir -p $(BUILD_DIR)
+$(BUILD_DIR)/base/%.o: base/%.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/libkern_%.o: libkern/%.cpp

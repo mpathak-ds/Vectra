@@ -15,10 +15,18 @@
 
 #include <osdef.hpp>
 #include <libkern/klog.hpp>
+#include <mm/mm.hpp>
 
-void kernel_main(void)
+void kernel_main(boot_info_t *boot_info)
 {
     klog_info("kern", "initializing kernel");
+    mm_boot_init(boot_info);
+
+    //test block, remove later
+    void *test_ptr = mm_boot_alloc(128);
+    if (!test_ptr) panic("boot alloc test failed");
+
+    klog_info("kern", "alloc successful at 0x%x", test_ptr);
 
     while (1);
 }

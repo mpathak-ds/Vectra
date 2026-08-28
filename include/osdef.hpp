@@ -16,6 +16,9 @@
 #ifndef KERN_BASE_H
 #define KERN_BASE_H
 
+#define NULL 0
+#define ALIGN_UP(num, align) (((num) + ((align) - 1)) & ~((align) - 1))
+
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
@@ -30,5 +33,13 @@ typedef uint64_t size_t;
 typedef uint64_t uintptr_t;
 
 typedef uint32_t OSSTATUS;
+
+typedef struct boot_info 
+{
+    uint8_t *early_heap_start;
+    uint8_t *early_heap_end;
+} boot_info_t;
+
+void panic(const char *reason);
 
 #endif
