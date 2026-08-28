@@ -18,11 +18,13 @@
 #include <drivers/gic.hpp>
 #include <libkern/klog.hpp>
 
-uint64_t ticks;
+static uint64_t global_ticks;
 
-static int32_t timer_handler(arm64_registers_t *regs)
+static int32_t timer_handler(uint32_t iar, arm64_registers_t *regs)
 {
     uint64_t freq, calculated_freq;
+
+    global_ticks++;
 
     freq = timer_get_core_frequency();
     calculated_freq = freq / TIMER_FREQ;
@@ -56,6 +58,15 @@ void timer_enable()
     value |= TIMER_ENABLE;
 
     asm("msr cntp_ctl_el0, %0" : : "r"(value));
+}
+
+void timer_wait(uint64_t ticks)
+{
+    uint64_t end = global_ticks + ticks;
+
+    while (global_ticks < end) {
+        ;
+    }
 }
 
 void timer_init()

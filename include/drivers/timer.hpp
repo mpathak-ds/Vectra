@@ -31,6 +31,8 @@ void timer_set_frequency(uint64_t freq);
 
 void timer_enable();
 
+void timer_wait(uint64_t ticks);
+
 void timer_init();
 
 #endif

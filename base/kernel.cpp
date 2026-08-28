@@ -14,6 +14,7 @@
  */
 
 #include <osdef.hpp>
+#include <drivers/timer.hpp>
 #include <libkern/klog.hpp>
 #include <mm/mm.hpp>
 
@@ -34,6 +35,10 @@ void kernel_main(boot_info_t *boot_info)
 
     klog_info("kern", "physical memory initialized (reserved 0x%x - 0x%x, size: %u KB)", 
               kern_start, kern_end, kern_size / 1024);
+
+    timer_wait(10);
+
+    klog_debug("kern", "sleeped for 10 ticks");
 
     while (1);
 }

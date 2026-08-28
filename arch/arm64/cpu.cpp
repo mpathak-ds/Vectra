@@ -80,6 +80,11 @@ void halt()
     for (;;) asm volatile("wfe");
 }
 
+void wai()
+{
+    asm volatile("isb" : : : "memory");
+}
+
 uint64_t cpu_get_membase()
 {
 #ifdef MACHINE_OPI

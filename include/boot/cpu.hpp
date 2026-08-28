@@ -32,13 +32,15 @@ typedef struct {
     uint64_t sp;  // stack pointer
 } arm64_registers_t;
 
-typedef int32_t (*interrupt_handler_t)(arm64_registers_t*);
+typedef int32_t (*interrupt_handler_t)(uint32_t, arm64_registers_t*);
 
 void cpu_set_vbar_el1(uint64_t val);
 void cpu_set_vbar_el2(uint64_t val);
 void cpu_set_vaif(uint64_t val);
 
 void halt();
+
+void wai();
 
 uint64_t cpu_get_el();
 uint64_t cpu_get_el_num();

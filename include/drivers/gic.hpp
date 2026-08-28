@@ -38,9 +38,11 @@
 #define GIC_SPURIOUS_INTERRUPT 1023
 
 void gic_register_interrupt_handler(uint8_t irq, interrupt_handler_t handler);
+
 void gic_disable_interrupts();
 void gic_disable_interrupt(uint8_t irq);
 void gic_enable_interrupt(uint8_t irq);
+
 void gic_set_interrupt_priority(uint8_t irq, uint8_t priority);
 void gic_redirect_irq(uint8_t irq);
 void gic_allow_interrupts();
