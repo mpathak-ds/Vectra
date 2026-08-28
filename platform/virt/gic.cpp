@@ -27,10 +27,12 @@
 #define GICD_IIDR            0x008
 #define GICD_IGROUPR(n)      (0x080 + (n) * 4)
 #define GICD_ISENABLER(n)    (0x100 + (n) * 4)
+#define GICD_ICENABLER(n)    (0x180 + (n) * 4)
 #define GICD_IPRIORITYR(n)   (0x400 + (n) * 4)
 
 #define GICC_CTLR            0x000
 #define GICC_PMR             0x004
+#define GICC_BPR             0x008
 #define GICC_IAR             0x00C
 #define GICC_EOIR            0x010
 
@@ -82,6 +84,17 @@ void gic_register_interrupt_handler(uint8_t irq, interrupt_handler_t handler)
     gic_handlers[irq] = handler;
 }
 
+void gic_disable_interrupts()
+{
+    io_write32(GICD_BASE, GICD_ISENABLER(0), 0xFFFFFFFF);
+    io_write32(GICD_BASE, GICD_ISENABLER(1), 0xFFFFFFFF);
+}
+
+void gic_disable_interrupt(uint8_t irq)
+{
+    io_write32(GICD_BASE, GICD_ICENABLER(irq / 32), (1 << (irq % 32)));
+}
+
 void gic_enable_interrupt(uint8_t irq)
 {
     io_write32(GICD_BASE, GICD_ISENABLER(irq / 32), (1 << (irq % 32)));
@@ -119,11 +132,13 @@ void gic_init()
     uint32_t gicd_typer;
 
     gicd_ctlr = io_read32(GICD_BASE, GICD_CTLR);
-    gicd_ctlr |= GIC_ENABLE_GRP0 | GIC_ENABLE_GRP1;
+    gicd_ctlr |= GIC_ENABLE_GRP0;
     io_write32(GICD_BASE, GICD_CTLR, gicd_ctlr);
     gicc_ctlr = io_read32(GICC_BASE, GICC_CTLR);
     gicc_ctlr |= GIC_ENABLE_GRP0 | GIC_ENABLE_GRP1;
     io_write32(GICC_BASE, GICC_CTLR, gicc_ctlr);
+    //reset bpr
+    io_write32(GICC_BASE, GICC_BPR, 0x00000000);
 
     gicd_iidr = io_read32(GICD_BASE, GICD_IIDR);
     gicd_typer = io_read32(GICD_BASE, GICD_TYPER);
