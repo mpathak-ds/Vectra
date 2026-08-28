@@ -24,7 +24,7 @@ void kernel_main(void);
 extern "C" void boot_main(void)
 {
     klog_info("boot", "starting Vectra Kernel");
-    klog_info("cpu", "running at EL%d", cpu_get_el_num());
+    klog_info("cpu", "running in EL%d mode", cpu_get_el_num());
 
     interrupts_init();
     //test
