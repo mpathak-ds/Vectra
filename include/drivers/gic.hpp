@@ -18,11 +18,20 @@
 
 #include <osdef.hpp>
 
-#define GIC_ENABLE_GRP0 0x01
-#define GIC_ENABLE_GRP1 0x02
+#define GIC_ENABLE_GRP0      0x01
+#define GIC_ENABLE_GRP1      0x02
 
-#define GIC_PRODUCT_GIC_400 0x002
-#define GIC_IMPLEMENTER_ARM 0x43B
+#define GIC_PRIORITY_ALL     0xFF
+#define GIC_PRIORITY_HIGHEST 0x80
+#define GIC_PRIORITY_MEDIUM  0xA0
+#define GIC_PRIORITY_LOW     0xF0
+
+#define GIC_PRODUCT_GIC_400  0x002
+#define GIC_IMPLEMENTER_ARM  0x43B
+
+void gic_enable_interrupt(uint8_t irq);
+void gic_set_interrupt_priority(uint8_t irq, uint8_t priority);
+void gic_allow_interrupts(void);
 
 void gic_init(void);
 

@@ -18,6 +18,8 @@
 
 #include <osdef.hpp>
 
+#define TIMER_IRQ_ID 30
+
 #define TO_MHZ(hz) ((hz) / 1000000)
 #define TO_KHZ(hz) ((hz) / 1000)
 

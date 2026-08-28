@@ -15,6 +15,7 @@
 
 #include <drivers/timer.hpp>
 #include <boot/cpu.hpp>
+#include <drivers/gic.hpp>
 #include <libkern/klog.hpp>
 
 uint64_t timer_get_core_frequency(void)
@@ -44,13 +45,16 @@ void timer_enable(void)
 
 void timer_init(void)
 {
-    uint64_t freq;
+    uint64_t freq, calculated_freq;
 
     freq = timer_get_core_frequency();
+    calculated_freq = freq / 1000;
 
-    klog_info("timer", "core frequency: %d kHz", TO_KHZ(freq));
+    klog_info("timer", "core frequency: %d kHz, setting timer frequency to %d ms", TO_KHZ(freq), calculated_freq);
 
-    timer_set_frequency(freq);
+    timer_set_frequency(calculated_freq);
     timer_enable();
     interrupts_enable();
+    gic_enable_interrupt(TIMER_IRQ_ID);
+    gic_set_interrupt_priority(TIMER_IRQ_ID, GIC_PRIORITY_MEDIUM);
 }
