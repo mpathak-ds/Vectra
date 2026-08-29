@@ -80,10 +80,21 @@ void halt()
     for (;;) asm volatile("wfe");
 }
 
-void wai()
+void wfi()
 {
     asm volatile("isb" : : : "memory");
 }
+
+void dsbsy()
+{
+    asm volatile("dsb sy" : : : "memory");
+}
+
+void dmbsy()
+{
+    asm volatile("dmb sy" : : : "memory");
+}
+
 
 uint64_t cpu_get_membase()
 {

@@ -21,6 +21,8 @@
 
 #define GIC_MAX_IRQS           0xFF
 
+#define GIC_ENABLE_IRQS        0x01
+
 #define GIC_ENABLE_GRP0        0x01
 #define GIC_ENABLE_GRP1        0x02
 #define GIC_ACKCTL             0x04
@@ -37,11 +39,15 @@
 #define GIC_UNKNOWN_INTERRUPT  1022
 #define GIC_SPURIOUS_INTERRUPT 1023
 
+void gic_eoi();
+
 void gic_register_interrupt_handler(uint8_t irq, interrupt_handler_t handler);
 
 void gic_disable_interrupts();
 void gic_disable_interrupt(uint8_t irq);
 void gic_enable_interrupt(uint8_t irq);
+
+void gic_clear_pending(uint8_t irq);
 
 void gic_set_interrupt_priority(uint8_t irq, uint8_t priority);
 void gic_redirect_irq(uint8_t irq);

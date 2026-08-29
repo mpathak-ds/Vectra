@@ -29,7 +29,11 @@
 uint64_t timer_get_core_frequency();
 void timer_set_frequency(uint64_t freq);
 
+void timer_disable();
 void timer_enable();
+
+void timer_unmask();
+void timer_mask();
 
 void timer_wait(uint64_t ticks);
 

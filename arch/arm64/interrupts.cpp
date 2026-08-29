@@ -38,9 +38,22 @@ void interrupts_set_vbar(uint64_t val)
     }
 }
 
-void interrupts_enable(void)
+void interrupts_enable(bool irq, bool fiq)
 {
-    asm("msr daifclr, #3");
+    uint32_t daif;
+    uint32_t value = 0;
+
+    if (irq) {
+        value |= 1;
+    }
+
+    if (fiq) {
+        value |= 2;
+    }
+
+    asm volatile("mrs %0, daif" : "=r"(daif));
+    daif &= ~value;
+    asm volatile("msr daif, %0" : : "r"(daif));
 }
 
 void interrupts_init(void)
@@ -102,6 +115,9 @@ extern "C" void interrupt_exception_handler(uint32_t exc_type, arm64_registers_t
 
             for (;;) asm volatile("wfe");
             break;
+        }
+        default: {
+            klog_warn("cpu", "unknown exception type %d", exc_type);
         }
     }
 }

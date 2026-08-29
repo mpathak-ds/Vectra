@@ -40,7 +40,11 @@ void cpu_set_vaif(uint64_t val);
 
 void halt();
 
-void wai();
+void wfi();
+
+void dsbsy();
+
+void dmbsy();
 
 uint64_t cpu_get_el();
 uint64_t cpu_get_el_num();
@@ -53,7 +57,7 @@ uint64_t read_elr_el1();
 uint64_t cpu_get_membase();
 uint64_t cpu_get_memsize();
 
-void interrupts_enable();
+void interrupts_enable(bool irq, bool fiq);
 void interrupts_init();
 
 extern "C" arm64_registers_t *dump_registers();

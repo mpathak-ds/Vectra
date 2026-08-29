@@ -28,6 +28,7 @@
 #define GICD_IGROUPR(n)      (0x080 + (n) * 4)
 #define GICD_ISENABLER(n)    (0x100 + (n) * 4)
 #define GICD_ICENABLER(n)    (0x180 + (n) * 4)
+#define GICD_ICPENDR(n)      (0x280 + (n) * 4)
 #define GICD_IPRIORITYR(n)   (0x400 + (n) * 4)
 
 #define GICC_CTLR            0x0000
@@ -53,11 +54,6 @@ static inline uint32_t gic_interrupt_ack()
     return gicc_iar & 0x3FF;
 }
 
-static inline void gic_eoi()
-{
-    io_write32(GICC_BASE, GICC_EOIR, gicc_iar);
-}
-
 //PUBLIC FUNCTIONS
 
 //must be used only in exception handler
@@ -67,6 +63,7 @@ void gic_handle_interrupts(arm64_registers_t *regs)
     int32_t ret;
 
     if (irq_id == GIC_SPURIOUS_INTERRUPT) {
+        klog_debug("gic", "spurious");
         return;
     }
 
@@ -81,7 +78,12 @@ void gic_handle_interrupts(arm64_registers_t *regs)
     }
 
     gic_eoi();
-    wai();
+    wfi();
+}
+
+void gic_eoi()
+{
+    io_write32(GICC_BASE, GICC_EOIR, gicc_iar);
 }
 
 void gic_register_interrupt_handler(uint8_t irq, interrupt_handler_t handler)
@@ -103,6 +105,11 @@ void gic_disable_interrupt(uint8_t irq)
 void gic_enable_interrupt(uint8_t irq)
 {
     io_write32(GICD_BASE, GICD_ISENABLER(irq / 32), (1 << (irq % 32)));
+}
+
+void gic_clear_pending(uint8_t irq)
+{
+    io_write32(GICD_BASE, GICD_ICPENDR(irq / 32), (1 << (irq % 32)));
 }
 
 void gic_set_interrupt_priority(uint8_t irq, uint8_t priority)
@@ -137,7 +144,7 @@ void gic_init()
     uint32_t gicd_typer;
 
     gicd_ctlr = io_read32(GICD_BASE, GICD_CTLR);
-    gicd_ctlr |= GIC_ENABLE_GRP0;
+    gicd_ctlr |= GIC_ENABLE_IRQS;
     io_write32(GICD_BASE, GICD_CTLR, gicd_ctlr);
     gicc_ctlr = io_read32(GICC_BASE, GICC_CTLR);
     gicc_ctlr |= GIC_ENABLE_GRP0;
@@ -152,4 +159,5 @@ void gic_init()
         (gicd_iidr & 0xfff) == GIC_IMPLEMENTER_ARM ? "ARM" : "Unknown", (32 * ((gicd_typer & 0x1F) + 1)));
 
     gic_allow_interrupts();
+    interrupts_enable(true, false);
 }
