@@ -22,8 +22,6 @@ static volatile uint64_t global_ticks;
 
 static int32_t timer_handler(uint32_t iar, arm64_registers_t *regs)
 {
-    timer_mask();
-
     klog_info("timer", "IRQ ALIVE!"); 
 
     global_ticks++;
@@ -36,8 +34,6 @@ static int32_t timer_handler(uint32_t iar, arm64_registers_t *regs)
 
     gic_eoi();
 
-    timer_unmask();
-
     return GIC_MANUALEOI_IRQ;
 }
 
@@ -45,32 +41,32 @@ uint64_t timer_get_core_frequency()
 {
     uint64_t freq;
 
-    asm("mrs %0, cntfrq_el0" : "=r"(freq));
+    asm volatile("mrs %0, cntfrq_el0" : "=r"(freq));
 
     return freq;
 }
 
 void timer_set_frequency(uint64_t freq)
 {
-    asm("msr cntp_tval_el0, %0" : : "r"(freq));
+    asm volatile("msr cntp_tval_el0, %0" : : "r"(freq));
 }
 
 void timer_disable()
 {
     uint64_t value;
 
-    asm("mrs %0, cntp_ctl_el0" : "=r"(value));
+    asm volatile("mrs %0, cntp_ctl_el0" : "=r"(value));
     value &= ~TIMER_ENABLE;
-    asm("msr cntp_ctl_el0, %0" : : "r"(value));
+    asm volatile("msr cntp_ctl_el0, %0" : : "r"(value));
 }
 
 void timer_enable()
 {
     uint64_t value;
 
-    asm("mrs %0, cntp_ctl_el0" : "=r"(value));
+    asm volatile("mrs %0, cntp_ctl_el0" : "=r"(value));
     value |= TIMER_ENABLE;
-    asm("msr cntp_ctl_el0, %0" : : "r"(value));
+    asm volatile("msr cntp_ctl_el0, %0" : : "r"(value));
 }
 
 void timer_unmask()

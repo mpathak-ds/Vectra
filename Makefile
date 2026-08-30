@@ -16,7 +16,7 @@ ifeq ($(ARCH),riscv)
 	COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -fno-stack-protector -fno-threadsafe-statics -mcmodel=medany -DARCH_SPEC_RISCV
 	LDFLAGS       := -T arch/riscv/link.ld -nostdlib $(CPPFLAGS)
 else ifeq ($(ARCH),arm64)
-	COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -mgeneral-regs-only -fno-stack-protector -fno-threadsafe-statics -fno-use-cxa-atexit #-g
+	COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -mgeneral-regs-only -fno-stack-protector -fno-threadsafe-statics -fno-use-cxa-atexit -DARCH_SPEC_ARM64 #-g
 	LDFLAGS       := -T arch/arm64/link.ld -nostdlib $(CPPFLAGS) -DARCH_SPEC_ARM64
 endif
 CFLAGS        := $(COMMON_FLAGS) $(CPPFLAGS)
@@ -43,11 +43,11 @@ LIBKERN_SRCS  := $(wildcard libkern/*.cpp)
 
 # Object Files
 ifeq ($(ARCH),riscv)
-	ARCH_ASM_OBJS := $(patsubst arch/riscv/%.S, $(BUILD_DIR)/arch_%.o, $(ARCH_ASM_SRCS))
-	ARCH_CPP_OBJS := $(patsubst arch/riscv/%.cpp, $(BUILD_DIR)/arch_%.o, $(ARCH_CPP_SRCS))
+	ARCH_ASM_OBJS := $(patsubst arch/riscv/%.S, $(BUILD_DIR)/riscv_%.o, $(ARCH_ASM_SRCS))
+	ARCH_CPP_OBJS := $(patsubst arch/riscv/%.cpp, $(BUILD_DIR)/riscv_%.o, $(ARCH_CPP_SRCS))
 else ifeq ($(ARCH),arm64)
-	ARCH_ASM_OBJS := $(patsubst arch/arm64/%.S, $(BUILD_DIR)/arch_%.o, $(ARCH_ASM_SRCS))
-	ARCH_CPP_OBJS := $(patsubst arch/arm64/%.cpp, $(BUILD_DIR)/arch_%.o, $(ARCH_CPP_SRCS))
+	ARCH_ASM_OBJS := $(patsubst arch/arm64/%.S, $(BUILD_DIR)/arm64_%.o, $(ARCH_ASM_SRCS))
+	ARCH_CPP_OBJS := $(patsubst arch/arm64/%.cpp, $(BUILD_DIR)/arm64_%.o, $(ARCH_CPP_SRCS))
 endif
 BASE_OBJS     := $(patsubst base/%.cpp, $(BUILD_DIR)/base/%.o, $(BASE_SRCS))
 PLATFORM_OBJS := $(patsubst platform/$(PLATFORM)/%.cpp, $(BUILD_DIR)/plat_%.o, $(PLATFORM_SRCS))
@@ -75,12 +75,21 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(OBJCOPY) -O binary $< $@
 
 # Compile Assembly Sources in arch/arm64/
-$(BUILD_DIR)/arch_%.o: arch/riscv/%.S
+$(BUILD_DIR)/riscv_%.o: arch/riscv/%.S
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Compile C++ Sources in arch/arm64/
-$(BUILD_DIR)/arch_%.o: arch/riscv/%.cpp
+$(BUILD_DIR)/riscv_%.o: arch/riscv/%.cpp
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/arm64_%.o: arch/arm64/%.S
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Compile C++ Sources in arch/arm64/
+$(BUILD_DIR)/arm64_%.o: arch/arm64/%.cpp
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
