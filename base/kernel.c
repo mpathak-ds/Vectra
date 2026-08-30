@@ -38,6 +38,7 @@ void kernel_main(boot_info_t *boot_info)
               kern_start, kern_end, kern_size / 1024);
 
     kheap_init();
+    ob_init();
     object_test();
     
     while (1);

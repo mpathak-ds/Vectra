@@ -20,10 +20,17 @@
 #include <libkern/hash.hpp>
 #include <sync/atomic.hpp>
 #include <libkern/string.hpp>
+#include <stdbool.h>
 
 static object_manager_t g_om;
 
-static void object_maybe_destroy(object_header_t *obj);
+void ob_init(void)
+{
+    hashtable_init(&g_om.id_table, 4096);
+    g_om.table_lock = (spinlock_t)SPINLOCK_INIT;
+    g_om.next_object_id = 1; //reserve 0 as invalid sentinel
+    g_om.type_count = 0;
+}
 
 /* This function registers a specific object type like a file */
 object_type_t *object_type_register(const char *name, size_t instance_size, object_type_ops_t ops)
@@ -82,11 +89,15 @@ void object_deref(object_header_t *obj)
 }
 
 /* This function destroys an object if its reference and handle counts are zero */
-static void object_maybe_destroy(object_header_t *obj)
+void object_maybe_destroy(object_header_t *obj)
 {
+    spin_lock(&obj->lock);
     //both has to be zero
-    if (atomic_load(&obj->refcount) != 0 || atomic_load(&obj->handle_count) != 0)
-        return;
+    bool go = (atomic_load(&obj->refcount) == 0 && atomic_load(&obj->handle_count) && !obj->destroyed);
+    if (go) obj->destroyed = true;
+    spin_unlock(&obj->lock);
+
+    if (!go) return; //not actually dead yet
 
     object_type_t *type = &g_om.types[obj->type_id];
     if (type->ops.destroy) type->ops.destroy(obj);
@@ -98,6 +109,8 @@ static void object_maybe_destroy(object_header_t *obj)
     slab_free(type->slab, obj);
 }
 
+/* Test callbacks */
+
 static int test_object_create(object_header_t *obj, void *args)
 {
     klog_info("test", "object create callback");
@@ -108,6 +121,8 @@ static void test_object_destroy(object_header_t *obj)
 {
     klog_info("test", "object destroy callback");
 }
+
+/* Tests */
 
 void object_test(void)
 {

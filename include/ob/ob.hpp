@@ -64,16 +64,19 @@ typedef struct object_header
     uint32_t generation;
     uint64_t object_id;
     spinlock_t lock;
+    bool destroyed;
     list_node_t type_list_link;
     uint8_t payload[];
 } object_header_t;
 
 #define OBJ_PAYLOAD(obj, T) ((T *)((obj)->payload))
 
+void ob_init(void);
 object_header_t *object_create(object_type_t *type, void *create_args);
 object_type_t *object_type_register(const char *name, size_t instance_size, object_type_ops_t ops);
 void object_ref(object_header_t *obj);
 void object_deref(object_header_t *obj);
 void object_test(void);
+void object_maybe_destroy(object_header_t *obj);
 
 #endif
