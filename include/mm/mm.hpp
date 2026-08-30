@@ -75,4 +75,6 @@ void kfree(void *ptr);
 void *kcalloc(size_t num, size_t size);
 void *krealloc(void *ptr, size_t new_size);
 
+void mm_init(boot_info_t *boot_info);
+
 #endif

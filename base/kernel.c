@@ -22,22 +22,7 @@
 void kernel_main(boot_info_t *boot_info)
 {
     klog_info("kern", "initializing kernel");
-    mm_boot_init(boot_info);
-
-    pmm_init(boot_info->machine_ram_base, boot_info->machine_ram_total);
-
-    //free all of memory, mark unused
-    pmm_free_region(boot_info->machine_ram_base, boot_info->machine_ram_total);
-
-    uintptr_t kern_start = (uintptr_t)boot_info->kernel_image_start;
-    uintptr_t kern_end   = (uintptr_t)boot_info->early_heap_end;
-    uint64_t  kern_size  = kern_end - kern_start;
-    pmm_reserve_region(kern_start, kern_size); //reserve kernel image and boot heap
-
-    klog_info("kern", "physical memory initialized (reserved 0x%x - 0x%x, size: %u KB)", 
-              kern_start, kern_end, kern_size / 1024);
-
-    kheap_init();
+    mm_init(boot_info);
     ob_init();
     object_test();
     
