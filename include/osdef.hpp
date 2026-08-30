@@ -22,8 +22,6 @@
 #define MACHINE_QEMU_VIRT
 //#define MACHINE_OPI
 
-#define ARCH_SPEC_ARM64
-
 #define MACHINE_RAM_SIZE 0x8000000 //128mb
 
 typedef unsigned char uint8_t;

@@ -17,7 +17,14 @@
 #define KERN_BASE_ATOMIC_H
 
 #include <osdef.hpp>
+
+#ifdef ARCH_SPEC_ARM64
 #include <sync/a64lock.hpp>
+#endif
+
+#ifdef ARCH_SPEC_RISCV
+#include <sync/rvlock.hpp>
+#endif
 
 static inline void spin_lock_init(spinlock_t *lock) {
     lock->locked = 0;
@@ -31,11 +38,21 @@ static inline void spin_lock(spinlock_t *lock) {
         }
     }
 #endif
+#ifdef ARCH_SPEC_RISCV
+    while (riscv_atomic_exchange_acquire(&lock->locked, 1) != 0) {
+        while (lock->locked != 0) {
+            cpu_relax();
+        }
+    }
+#endif
 }
 
 static inline void spin_unlock(spinlock_t *lock) {
 #ifdef ARCH_SPEC_ARM64
     arm64_atomic_store_release(&lock->locked, 0);
+#endif
+#ifdef ARCH_SPEC_RISCV
+    riscv_atomic_store_release(&lock->locked, 0);
 #endif
 }
 

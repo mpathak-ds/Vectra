@@ -226,6 +226,7 @@ void panic(const char *subsystem,
 
     uart_puts("\n");
 
+#ifdef ARCH_SPEC_ARM64
     arm64_registers_t *regs = dump_registers();
 
     klog_panic("cpu", 
@@ -254,6 +255,7 @@ void panic(const char *subsystem,
         regs->x24, regs->x25, regs->x26, regs->x27,
         regs->x28, regs->x29, regs->lr,  regs->sp
     );
+#endif
 
     halt();
 }

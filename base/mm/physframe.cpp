@@ -64,12 +64,25 @@ extern "C" void pmm_init(uintptr_t ram_base, uint64_t ram_size)
 
 void pmm_free_region(uintptr_t base, uint64_t size)
 {
-    uint64_t start_frame = (base - mem_phys_base) / PAGE_SIZE;
-    uint64_t count = size / PAGE_SIZE;
+    //align base up
+    uintptr_t aligned_start = ALIGN_UP(base, PAGE_SIZE);
+    
+    //adjust
+    if (aligned_start > base) {
+        uintptr_t diff = aligned_start - base;
+        if (size <= diff) return;
+        size -= diff;
+    }
 
-    for (uint64_t i=0; i < count; i++) {
-        if (bitmap_test(start_frame+i)) {
-            bitmap_clear(start_frame+i);
+    //align size down
+    uint64_t count = size / PAGE_SIZE;
+    uint64_t start_frame = (aligned_start - mem_phys_base) / PAGE_SIZE;
+
+    for (uint64_t i = 0; i < count; i++) {
+        if (start_frame + i >= total_frames) break;
+        
+        if (bitmap_test(start_frame + i)) {
+            bitmap_clear(start_frame + i);
             free_frames++;
         }
     }

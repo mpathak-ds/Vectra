@@ -103,11 +103,10 @@ void kernel_main(boot_info_t *boot_info)
     klog_info("kern", "physical memory initialized (reserved 0x%x - 0x%x, size: %u KB)", 
               kern_start, kern_end, kern_size / 1024);
 
+    uint32_t value = pmm_alloc_frame();
+    klog_debug("kern", "pmm_alloc_frame returned 0x%x", &value);
+
     mm_test_slab();
-
-    timer_wait(10);
-
-    klog_debug("kern", "wait for 10 ticks successful");
 
     while (1);
 }
