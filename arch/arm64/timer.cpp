@@ -22,23 +22,15 @@ static volatile uint64_t global_ticks;
 
 static int32_t timer_handler(uint32_t iar, arm64_registers_t *regs)
 {
-    uint64_t freq, calculated_freq;
-
-    timer_mask();
-
     global_ticks++;
 
-    freq = timer_get_core_frequency();
-    calculated_freq = freq / TIMER_FREQ;
-    timer_set_frequency(10000000);
-    timer_enable();
+    uint64_t freq = timer_get_core_frequency();
+    uint64_t reload_ticks = freq / TIMER_FREQ;
+
+    //writing to TVAL deasserts the timer IRQ line automatically
+    timer_set_frequency(reload_ticks);
 
     klog_debug("timer", "interrupt");
-
-    dsbsy();
-
-    timer_unmask();
-
     return 0;
 }
 
@@ -54,7 +46,6 @@ uint64_t timer_get_core_frequency()
 void timer_set_frequency(uint64_t freq)
 {
     asm("msr cntp_tval_el0, %0" : : "r"(freq));
-    wfi();
 }
 
 void timer_disable()
@@ -73,7 +64,6 @@ void timer_enable()
     asm("mrs %0, cntp_ctl_el0" : "=r"(value));
     value |= TIMER_ENABLE;
     asm("msr cntp_ctl_el0, %0" : : "r"(value));
-    wfi();
 }
 
 void timer_unmask()
@@ -105,17 +95,14 @@ void timer_wait(uint64_t ticks)
 
 void timer_init()
 {
-    uint64_t freq, calculated_freq;
-
-    freq = timer_get_core_frequency();
-    calculated_freq = freq / TIMER_FREQ;
-
+    uint64_t freq = timer_get_core_frequency();
     klog_info("timer", "core frequency: %d kHz", TO_KHZ(freq));
 
     gic_register_interrupt_handler(TIMER_IRQ_ID, timer_handler);
     gic_enable_interrupt(TIMER_IRQ_ID);
     gic_set_interrupt_priority(TIMER_IRQ_ID, GIC_PRIORITY_MEDIUM);
 
-    timer_set_frequency(10000000);
+    timer_set_frequency(freq / TIMER_FREQ);
+    timer_unmask();
     timer_enable();
 }

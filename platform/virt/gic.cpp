@@ -62,6 +62,11 @@ void gic_handle_interrupts(arm64_registers_t *regs)
     uint32_t irq_id = gic_interrupt_ack();
     int32_t ret;
 
+    if (irq_id >= GIC_UNKNOWN_INTERRUPT) {
+        gic_eoi();
+        return;
+    }
+
     if (irq_id == GIC_SPURIOUS_INTERRUPT) {
         klog_debug("gic", "spurious");
         return;
@@ -73,12 +78,11 @@ void gic_handle_interrupts(arm64_registers_t *regs)
         ret = -1;
     }
 
+    gic_eoi();
+
     if (ret == -1) {
         panic("gic", "interrupt handler exited with error");
     }
-
-    gic_eoi();
-    wfi();
 }
 
 void gic_eoi()
@@ -144,10 +148,10 @@ void gic_init()
     uint32_t gicd_typer;
 
     gicd_ctlr = io_read32(GICD_BASE, GICD_CTLR);
-    gicd_ctlr |= GIC_ENABLE_IRQS;
+    gicd_ctlr |= 0x03;
     io_write32(GICD_BASE, GICD_CTLR, gicd_ctlr);
     gicc_ctlr = io_read32(GICC_BASE, GICC_CTLR);
-    gicc_ctlr |= GIC_ENABLE_GRP0;
+    gicc_ctlr |= GIC_ENABLE_GRP0 | GIC_ENABLE_GRP1; //both groups
     io_write32(GICC_BASE, GICC_CTLR, gicc_ctlr);
     //reset bpr
     io_write32(GICC_BASE, GICC_BPR, 0x00000000);
