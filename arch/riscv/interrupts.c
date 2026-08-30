@@ -17,8 +17,8 @@
 #include <boot/cpu.hpp>
 #include <libkern/klog.hpp>
 
-extern "C" void trap_vector(void); //declaring it as a function gives you the address pointer
-extern "C" void interrupt_exception_handler(riscv_registers_t *regs);
+extern void trap_vector(void); //declaring it as a function gives you the address pointer
+extern void interrupt_exception_handler(riscv_registers_t *regs);
 
 void interrupts_set_tvec(uint64_t val)
 {
@@ -32,7 +32,7 @@ void interrupts_init(void)
     interrupts_set_tvec((uint64_t)trap_vector);
 }
 
-extern "C" void interrupt_exception_handler(riscv_registers_t *regs)
+void interrupt_exception_handler(riscv_registers_t *regs)
 {
     uint64_t scause = cpu_get_scause();
     uint64_t sepc = cpu_get_sepc();

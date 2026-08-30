@@ -17,15 +17,15 @@
 #include <boot/cpu.hpp>
 #include <libkern/klog.hpp>
 
-extern "C" char __heap_start[];
-extern "C" char __heap_end[];
-extern "C" char __text_start[];
+extern char __heap_start[];
+extern char __heap_end[];
+extern char __text_start[];
 
 void kernel_main(boot_info_t *boot_info);
 
 static boot_info_t early_info;
 
-extern "C" void boot_main(void)
+void boot_main(void)
 {
     klog_info("boot", "starting Vectra Kernel");
 

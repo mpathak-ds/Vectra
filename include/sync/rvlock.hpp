@@ -3,6 +3,9 @@
 
 #include <osdef.hpp>
 
+typedef volatile uint32_t atomic_uint32_t;
+typedef volatile int32_t  atomic_int32_t;
+
 typedef struct spinlock {
     volatile uint32_t locked; // 0 = free, 1 = held
 } spinlock_t;
@@ -33,6 +36,42 @@ static inline void riscv_atomic_store_release(volatile uint32_t *ptr, uint32_t n
         : "r" (ptr), "r" (new_val)
         : "memory"
     );
+}
+
+static inline uint32_t atomic_load(const volatile uint32_t *ptr) {
+    uint32_t val;
+    __asm__ volatile (
+        "    lw      %0, 0(%1)        \n"
+        "    fence   rw, rw           \n"
+        : "=r" (val)
+        : "r" (ptr)
+        : "memory"
+    );
+    return val;
+}
+
+static inline uint32_t atomic_fetch_add(volatile uint32_t *ptr, uint32_t val) {
+    uint32_t old_val;
+    __asm__ volatile (
+        "    amoadd.w.aqrl %0, %2, 0(%1) \n"
+        : "=r" (old_val)
+        : "r" (ptr), "r" (val)
+        : "memory"
+    );
+    return old_val;
+}
+
+static inline uint32_t atomic_fetch_sub(volatile uint32_t *ptr, uint32_t val) {
+    uint32_t old_val;
+    uint32_t tmp;
+    __asm__ volatile (
+        "    neg           %1, %3        \n"
+        "    amoadd.w.aqrl %0, %1, 0(%2) \n"
+        : "=&r" (old_val), "=&r" (tmp)
+        : "r" (ptr), "r" (val)
+        : "memory"
+    );
+    return old_val;
 }
 
 #endif

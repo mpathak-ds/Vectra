@@ -17,7 +17,7 @@
 
 #define UART_BASE 0x10000000UL
 
-extern "C" void uart_putc(char c)
+void uart_putc(char c)
 {
     volatile unsigned int* dr = (volatile unsigned int*)UART_BASE;
     *dr = c;
