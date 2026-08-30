@@ -17,6 +17,7 @@
 #define KERN_MM_H
 
 #include <osdef.hpp>
+#include <sync/atomic.hpp>
 
 #define PAGE_SIZE 4096
 #define PAGE_SHIFT 12
@@ -30,5 +31,31 @@ void pmm_free_region(uintptr_t base, uint64_t size);
 void pmm_reserve_region(uintptr_t base, uint64_t size);
 uintptr_t pmm_alloc_frame(void);
 void pmm_free_frame(uintptr_t phys_addr);
+
+struct free_node {
+    free_node *next;
+};
+
+struct frame {
+    uintptr_t phys_addr;
+    frame *next;
+};
+typedef struct frame frame_t;
+
+struct list {
+    free_node *head;
+};
+typedef struct list list_t;
+
+typedef struct slab_cache {
+    size_t obj_size;
+    frame_t *slabs;
+    list_t free_objects;
+    spinlock_t lock;
+} slab_cache_t;
+
+void *slab_alloc(slab_cache_t *cache);
+void slab_free(slab_cache_t *cache, void *obj);
+slab_cache_t *slab_cache_create(size_t obj_size);
 
 #endif
