@@ -39,6 +39,9 @@
 #define GIC_UNKNOWN_INTERRUPT  1022
 #define GIC_SPURIOUS_INTERRUPT 1023
 
+#define GIC_AUTOEOI_IRQ     0
+#define GIC_MANUALEOI_IRQ   1
+
 void gic_eoi();
 
 void gic_register_interrupt_handler(uint8_t irq, interrupt_handler_t handler);

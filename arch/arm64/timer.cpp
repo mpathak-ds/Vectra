@@ -22,6 +22,10 @@ static volatile uint64_t global_ticks;
 
 static int32_t timer_handler(uint32_t iar, arm64_registers_t *regs)
 {
+    timer_mask();
+
+    klog_info("timer", "IRQ ALIVE!"); 
+
     global_ticks++;
 
     uint64_t freq = timer_get_core_frequency();
@@ -30,8 +34,11 @@ static int32_t timer_handler(uint32_t iar, arm64_registers_t *regs)
     //writing to TVAL deasserts the timer IRQ line automatically
     timer_set_frequency(reload_ticks);
 
-    klog_debug("timer", "interrupt");
-    return 0;
+    gic_eoi();
+
+    timer_unmask();
+
+    return GIC_MANUALEOI_IRQ;
 }
 
 uint64_t timer_get_core_frequency()
@@ -89,7 +96,8 @@ void timer_wait(uint64_t ticks)
     uint64_t end = global_ticks + ticks;
 
     while (global_ticks < end) {
-        ;
+        klog_debug("timer", "%d", global_ticks);
+        asm volatile("nop" : : : "memory");
     }
 }
 
@@ -101,6 +109,8 @@ void timer_init()
     gic_register_interrupt_handler(TIMER_IRQ_ID, timer_handler);
     gic_enable_interrupt(TIMER_IRQ_ID);
     gic_set_interrupt_priority(TIMER_IRQ_ID, GIC_PRIORITY_MEDIUM);
+
+    global_ticks = 0;
 
     timer_set_frequency(freq / TIMER_FREQ);
     timer_unmask();

@@ -22,14 +22,15 @@
 #define GICD_BASE 0x08000000
 #define GICC_BASE 0x08010000
 
-#define GICD_CTLR            0x000
-#define GICD_TYPER           0x004
-#define GICD_IIDR            0x008
-#define GICD_IGROUPR(n)      (0x080 + (n) * 4)
-#define GICD_ISENABLER(n)    (0x100 + (n) * 4)
-#define GICD_ICENABLER(n)    (0x180 + (n) * 4)
-#define GICD_ICPENDR(n)      (0x280 + (n) * 4)
-#define GICD_IPRIORITYR(n)   (0x400 + (n) * 4)
+#define GICD_CTLR            0x0000
+#define GICD_TYPER           0x0004
+#define GICD_IIDR            0x0008
+#define GICD_ICFGR1          0x0C04
+#define GICD_IGROUPR(n)      (0x0080 + (n) * 4)
+#define GICD_ISENABLER(n)    (0x0100 + (n) * 4)
+#define GICD_ICENABLER(n)    (0x0180 + (n) * 4)
+#define GICD_ICPENDR(n)      (0x0280 + (n) * 4)
+#define GICD_IPRIORITYR(n)   (0x0400 + (n) * 4)
 
 #define GICC_CTLR            0x0000
 #define GICC_PMR             0x0004
@@ -78,9 +79,9 @@ void gic_handle_interrupts(arm64_registers_t *regs)
         ret = -1;
     }
 
-    gic_eoi();
-
-    if (ret == -1) {
+    if (ret == GIC_AUTOEOI_IRQ) {
+        gic_eoi();
+    } else if (ret == -1) {
         panic("gic", "interrupt handler exited with error");
     }
 }
@@ -146,15 +147,20 @@ void gic_init()
     uint32_t gicc_ctlr;
     uint32_t gicd_iidr;
     uint32_t gicd_typer;
+    uint32_t gicd_icfgr;
 
     gicd_ctlr = io_read32(GICD_BASE, GICD_CTLR);
-    gicd_ctlr |= 0x03;
+    gicd_ctlr |= GIC_ENABLE_GRP0 | GIC_ENABLE_GRP1;
     io_write32(GICD_BASE, GICD_CTLR, gicd_ctlr);
     gicc_ctlr = io_read32(GICC_BASE, GICC_CTLR);
     gicc_ctlr |= GIC_ENABLE_GRP0 | GIC_ENABLE_GRP1; //both groups
     io_write32(GICC_BASE, GICC_CTLR, gicc_ctlr);
     //reset bpr
     io_write32(GICC_BASE, GICC_BPR, 0x00000000);
+
+    gicd_icfgr = io_read32(GICD_BASE, GICD_ICFGR1);
+    gicd_icfgr &= ~(3 << 28);
+    io_write32(GICD_BASE, GICD_ICFGR1, gicd_icfgr);
 
     gicd_iidr = io_read32(GICD_BASE, GICD_IIDR);
     gicd_typer = io_read32(GICD_BASE, GICD_TYPER);

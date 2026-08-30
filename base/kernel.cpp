@@ -105,5 +105,9 @@ void kernel_main(boot_info_t *boot_info)
 
     mm_test_slab();
 
+    timer_wait(10);
+
+    klog_debug("kern", "wait for 10 ticks successful");
+
     while (1);
 }
