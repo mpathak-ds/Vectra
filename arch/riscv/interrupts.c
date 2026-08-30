@@ -18,7 +18,7 @@
 #include <libkern/klog.hpp>
 
 extern void trap_vector(void); //declaring it as a function gives you the address pointer
-extern void interrupt_exception_handler(riscv_registers_t *regs);
+extern void interrupt_exception_handler(uint32_t usermode, riscv_registers_t *regs);
 
 void interrupts_set_tvec(uint64_t val)
 {
@@ -32,7 +32,7 @@ void interrupts_init(void)
     interrupts_set_tvec((uint64_t)trap_vector);
 }
 
-void interrupt_exception_handler(riscv_registers_t *regs)
+void interrupt_exception_handler(uint32_t usermode, riscv_registers_t *regs)
 {
     uint64_t scause = cpu_get_scause();
     uint64_t sepc = cpu_get_sepc();
@@ -40,7 +40,7 @@ void interrupt_exception_handler(riscv_registers_t *regs)
 
     if (!SCAUSE_IS_IRQ(scause)) {
         klog_critical("cpu", 
-            "S-MODE EXCEPTION %d: SCAUSE=0x%x, SEPC=0x%x, STVAL=0x%x\n"
+            "%c-MODE EXCEPTION %d: SCAUSE=0x%x, SEPC=0x%x, STVAL=0x%x\n"
             "x0 =0x%x  ra =0x%x "
             "sp =0x%x  gp =0x%x\n"
             "tp =0x%x  t0 =0x%x "
@@ -57,7 +57,7 @@ void interrupt_exception_handler(riscv_registers_t *regs)
             "s10=0x%x  s11=0x%x\n"
             "t3 =0x%x  t4 =0x%x "
             "t5 =0x%x  t6 =0x%x", 
-            (scause & 0x7FFFFFFFFFFFFFFF), scause, sepc, stval,
+            usermode == 1 ? 'U' : 'S', (scause & 0x7FFFFFFFFFFFFFFF), scause, sepc, stval,
             regs->zero, regs->ra,  regs->sp,  regs->gp,
             regs->tp,   regs->t0,  regs->t1,  regs->t2,
             regs->s0,   regs->s1,  regs->a0,  regs->a1,

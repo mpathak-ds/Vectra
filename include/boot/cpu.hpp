@@ -69,11 +69,18 @@ typedef struct {
     uint64_t t6;   // x31
 } riscv_registers_t;
 
+typedef struct {
+    uint64_t kernel_stack;
+    uint64_t kernel_satp;
+} riscv_hart_info;
+
 typedef int32_t (*interrupt_handler_t)(uint32_t, arm64_registers_t*);
 
 void cpu_set_vbar_el1(uint64_t val);
 void cpu_set_vbar_el2(uint64_t val);
 void cpu_set_vaif(uint64_t val);
+
+void enter_usermode(uint64_t user_pc, uint64_t user_sp);
 
 void cpu_set_stvec(uint64_t addr);
 

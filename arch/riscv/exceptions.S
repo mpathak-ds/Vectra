@@ -8,13 +8,23 @@
 trap_vector:
     addi sp, sp, -256
 
+    sd x5,  40(sp)
     addi t0, sp, 256
     sd t0,  16(sp)
 
+    csrrw sp, sscratch, sp
+    bnez sp, from_usermode
+
+    li t0, 0
+    csrrw sp, sscratch, sp
+    j stackframe_create
+
+from_usermode:
+    li t0, 1
+stackframe_create:
     sd x1,  8(sp)
     sd x3,  24(sp)
     sd x4,  32(sp)
-    sd x5,  40(sp)
     sd x6,  48(sp)
     sd x7,  56(sp)
     sd x8,  64(sp)
@@ -42,7 +52,10 @@ trap_vector:
     sd x30, 240(sp)
     sd x31, 248(sp)
 
-    mv a0, sp
+    csrw sscratch, zero
+
+    mv a0, t0
+    mv a1, sp
     call interrupt_exception_handler
 
     ld x31, 248(sp)
@@ -74,7 +87,11 @@ trap_vector:
     ld x5,  40(sp)
     ld x4,  32(sp)
     ld x3,  24(sp)
-    ld x1,  8(sp)
+    # ld x1,  8(sp)
 
     addi sp, sp, 256
+    csrw sscratch, t0
+
+    ld x1, 8(sp)
+    ld sp, 16(sp)
     sret
