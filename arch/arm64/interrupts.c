@@ -85,23 +85,23 @@ void interrupt_exception_handler(uint32_t exc_type, arm64_registers_t *regs)
         }
         case EXC_TYPE_SERR: {
             klog_critical("cpu", 
-                "EL%d EXCEPTION %d: ESR=0x%llx, ELR=0x%llx\n"
-                "x0 =0x%llx  x1 =0x%llx "
-                "x2 =0x%llx  x3 =0x%llx\n"
-                "x4 =0x%llx  x5 =0x%llx "
-                "x6 =0x%llx  x7 =0x%llx\n"
-                "x8 =0x%llx  x9 =0x%llx "
-                "x10=0x%llx  x11=0x%llx\n"
-                "x12=0x%llx  x13=0x%llx "
-                "x14=0x%llx  x15=0x%llx\n"
-                "x16=0x%llx  x17=0x%llx "
-                "x18=0x%llx  x19=0x%llx\n"
-                "x20=0x%llx  x21=0x%llx "
-                "x22=0x%llx  x23=0x%llx\n"
-                "x24=0x%llx  x25=0x%llx "
-                "x26=0x%llx  x27=0x%llx\n"
-                "x28=0x%llx  fp =0x%llx "
-                "lr =0x%llx  sp =0x%llx", 
+                "EL%d EXCEPTION %d: ESR=0x%x, ELR=0x%x\n"
+                "x0 =0x%x  x1 =0x%x "
+                "x2 =0x%x  x3 =0x%x\n"
+                "x4 =0x%x  x5 =0x%x "
+                "x6 =0x%x  x7 =0x%x\n"
+                "x8 =0x%x  x9 =0x%x "
+                "x10=0x%x  x11=0x%x\n"
+                "x12=0x%x  x13=0x%x "
+                "x14=0x%x  x15=0x%x\n"
+                "x16=0x%x  x17=0x%x "
+                "x18=0x%x  x19=0x%x\n"
+                "x20=0x%x  x21=0x%x "
+                "x22=0x%x  x23=0x%x\n"
+                "x24=0x%x  x25=0x%x "
+                "x26=0x%x  x27=0x%x\n"
+                "x28=0x%x  fp =0x%x "
+                "lr =0x%x  sp =0x%x", 
                 el, exc_type, esr, elr,
                 regs->x0,  regs->x1,  regs->x2,  regs->x3,
                 regs->x4,  regs->x5,  regs->x6,  regs->x7,
