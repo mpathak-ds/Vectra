@@ -24,6 +24,8 @@
 
 static object_manager_t g_om;
 
+object_type_t *ob_type_for(uint32_t type_id) { return &g_om.types[type_id]; }
+
 void ob_init(void)
 {
     hashtable_init(&g_om.id_table, 4096);
@@ -93,7 +95,7 @@ void object_maybe_destroy(object_header_t *obj)
 {
     spin_lock(&obj->lock);
     //both has to be zero
-    bool go = (atomic_load(&obj->refcount) == 0 && atomic_load(&obj->handle_count) && !obj->destroyed);
+    bool go = (atomic_load(&obj->refcount) == 0 && atomic_load(&obj->handle_count) == 0 && !obj->destroyed);
     if (go) obj->destroyed = true;
     spin_unlock(&obj->lock);
 
@@ -117,9 +119,12 @@ static int test_object_create(object_header_t *obj, void *args)
     return 0;
 }
 
+static bool g_test_destroyed = false;
+
 static void test_object_destroy(object_header_t *obj)
 {
     klog_info("test", "object destroy callback");
+    g_test_destroyed = true;
 }
 
 /* Tests */
@@ -132,19 +137,16 @@ void object_test(void)
     ops.create = test_object_create;
     ops.destroy = test_object_destroy;
 
-    object_type_t *type =
-        object_type_register("test", 32, ops);
-
+    object_type_t *type = object_type_register("test", 32, ops);
     if (!type) {
         klog_info("test", "[ob] FAIL: type registration");
         return;
     }
+    type->default_rights = RIGHT_READ | RIGHT_WRITE;
 
     klog_info("test", "[ob] PASS: type registration");
 
-    object_header_t *obj =
-        object_create(type, NULL);
-
+    object_header_t *obj = object_create(type, NULL);
     if (!obj) {
         klog_info("test", "[ob] FAIL: object creation");
         return;
@@ -159,26 +161,58 @@ void object_test(void)
 
     klog_info("test", "[ob] PASS: initial refcount");
 
-    object_ref(obj);
-
-    if (atomic_load(&obj->refcount) != 2) {
-        klog_info("test", "[ob] FAIL: object_ref");
+    cap_table_t *cap_table = cap_table_create();
+    if (!cap_table) {
+        klog_info("test", "[ob] FAIL: cap_table_create");
         return;
     }
 
-    klog_info("test", "[ob] PASS: object_ref");
-
-    object_deref(obj);
-
-    if (atomic_load(&obj->refcount) != 1) {
-        klog_info("test", "[ob] FAIL: first deref");
+    cap_t handle = object_grant(cap_table, obj, RIGHT_READ);
+    if (handle == CAP_INVALID) {
+        klog_info("test", "[ob] FAIL: object_grant with RIGHT_READ");
         return;
     }
 
-    klog_info("test", "[ob] PASS: first deref");
+    if (atomic_load(&obj->handle_count) != 1) {
+        klog_info("test", "[ob] FAIL: handle_count after grant");
+        return;
+    }
+
+    klog_info("test", "[ob] PASS: object_grant with RIGHT_READ");
+    object_header_t *write_lookup = cap_lookup(cap_table, handle, RIGHT_WRITE);
+    if (write_lookup != NULL) {
+        klog_info("test", "[ob] FAIL: cap_lookup allowed RIGHT_WRITE when only RIGHT_READ granted");
+        return;
+    }
+
+    klog_info("test", "[ob] PASS: cap_lookup RIGHT_WRITE rejected");
+
+    object_header_t *read_lookup = cap_lookup(cap_table, handle, RIGHT_READ);
+    if (read_lookup != obj) {
+        klog_info("test", "[ob] FAIL: cap_lookup RIGHT_READ failed");
+        return;
+    }
+
+    object_deref(read_lookup);
+
+    klog_info("test", "[ob] PASS: cap_lookup RIGHT_READ succeeded");
 
     object_deref(obj);
 
-    klog_info("test", "[ob] PASS: final deref/destroy");
-    klog_info("test", "[ob] ALL TESTS PASSED");
+    if (g_test_destroyed) {
+        klog_info("test", "[ob] FAIL: object destroyed early while handle_count > 0");
+        return;
+    }
+
+    if (object_close(cap_table, handle) != 0) {
+        klog_info("test", "[ob] FAIL: object_close failed");
+        return;
+    }
+
+    if (!g_test_destroyed) {
+        klog_info("test", "[ob] FAIL: destroy callback did not fire after closing handle");
+        return;
+    }
+
+    klog_info("test", "[ob] PASS: handle_count dropped and destroy callback triggered");
 }

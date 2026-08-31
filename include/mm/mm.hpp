@@ -84,6 +84,8 @@ void *krealloc(void *ptr, size_t new_size);
 
 void mm_init(boot_info_t *boot_info);
 
+#ifdef ARCH_SPEC_RISCV
+
 phys_addr_t vmm_virt_to_phys(page_table_t page_table, virt_addr_t va);
 bool vmm_map_page(page_table_t page_table, virt_addr_t va, phys_addr_t pa, uint64_t flags);
 
@@ -91,5 +93,7 @@ phys_addr_t vmmk_virt_to_phys(virt_addr_t va);
 bool vmmk_map_page(virt_addr_t va, phys_addr_t pa, uint64_t flags);
 
 void vmm_init(boot_info_t *boot_info);
+
+#endif
 
 #endif

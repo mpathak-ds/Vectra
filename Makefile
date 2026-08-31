@@ -32,6 +32,7 @@ BUILD_DIR     := build
 ifeq ($(ARCH),riscv)
 	ARCH_ASM_SRCS := $(wildcard arch/riscv/*.S)
 	ARCH_C_SRCS := $(wildcard arch/riscv/*.c)
+	CCFLAGS += -march=rv64imafdc_zicsr_zifencei -mabi=lp64d
 else ifeq ($(ARCH),arm64)
 	ARCH_ASM_SRCS := $(wildcard arch/arm64/*.S)
 	ARCH_C_SRCS := $(wildcard arch/arm64/*.c)

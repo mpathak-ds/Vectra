@@ -56,7 +56,7 @@ static inline void spin_lock(spinlock_t *lock) {
 
 static inline void spin_unlock(spinlock_t *lock) {
 #ifdef ARCH_SPEC_ARM64
-    arm64_atomic_store_release(&lock->locked, 0);
+    atomic_store_release(&lock->locked, 0);
 #endif
 #ifdef ARCH_SPEC_RISCV
     riscv_atomic_store_release(&lock->locked, 0);

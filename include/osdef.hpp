@@ -25,6 +25,8 @@
 #define alignof __alignof__
 #endif
 
+#define UINT32_MAX 0xFFFFFFFF
+
 #define MACHINE_QEMU_VIRT
 //#define MACHINE_OPI
 

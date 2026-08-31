@@ -79,4 +79,37 @@ void object_deref(object_header_t *obj);
 void object_test(void);
 void object_maybe_destroy(object_header_t *obj);
 
+object_type_t *ob_type_for(uint32_t type_id);
+
+#define CAP_TABLE_MAX 4096
+#define CAP_INVALID   ((cap_t)UINT32_MAX)
+
+typedef uint32_t cap_t;
+
+#define RIGHT_READ  (1u << 0)
+#define RIGHT_WRITE (1u << 1)
+#define RIGHT_WAIT  (1u << 2)
+#define RIGHT_IOOP  (1u << 3)
+#define RIGHT_MAP   (1u << 4)
+#define RIGHT_GRANT (1u << 5)
+
+typedef struct cap_entry
+{
+    object_header_t *object;
+    uint32_t rights;
+    uint32_t generation; //snapshot
+} cap_entry_t;
+
+typedef struct cap_table
+{
+    cap_entry_t entries[CAP_TABLE_MAX];
+    atomic_uint32_t next_free_hint;
+    spinlock_t lock;
+} cap_table_t;
+
+cap_table_t *cap_table_create(void);
+cap_t object_grant(cap_table_t *table, object_header_t *obj, uint32_t rights);
+int  object_close(cap_table_t *table, cap_t handle);
+object_header_t *cap_lookup(cap_table_t *table, cap_t handle, uint32_t required_rights);
+
 #endif

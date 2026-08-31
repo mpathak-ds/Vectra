@@ -212,7 +212,11 @@ DEFINE_KLOG_FUNCTION(klog_panic,    Panic)
 void panic(const char *subsystem,
            const char *format, ...)
 {
-    uint64_t cpu_id = cpu_get_cpu_id();
+    uint64_t cpu_id = 0;
+
+#ifdef ARCH_SPEC_RISCV
+    cpu_id = cpu_get_cpu_id();
+#endif
     
     klog_panic("panic", "panic on cpu %d", cpu_id);
     uart_puts(level_name(Panic));

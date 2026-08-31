@@ -47,7 +47,7 @@ static inline uint32_t arm64_atomic_exchange_acquire(volatile uint32_t *ptr, uin
     return old_val;
 }
 
-static inline void arm64_atomic_store_release(volatile uint32_t *ptr, uint32_t new_val) {
+static inline void atomic_store_release(volatile uint32_t *ptr, uint32_t new_val) {
     __asm__ volatile (
         "    stlr    %w1, [%0]        \n"
         "    sev                      \n"
