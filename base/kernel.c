@@ -23,9 +23,9 @@ void kernel_main(boot_info_t *boot_info)
 {
     klog_info("kern", "initializing kernel");
     mm_init(boot_info);
-// #ifdef ARCH_SPEC_RISCV
-//     vmm_init(boot_info);
-// #endif
+#ifdef ARCH_SPEC_RISCV
+    vmm_init(boot_info);
+#endif
     ob_init();
     object_test();
     
