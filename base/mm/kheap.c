@@ -157,3 +157,24 @@ void *krealloc(void *ptr, size_t new_size)
     kfree(ptr);
     return new_ptr;
 }
+
+void kfree_sized(void *ptr, size_t size)
+{
+    if (!ptr) return;
+
+    alloc_header_t *header = ((alloc_header_t*)ptr) - 1;
+    int bucket = get_bucket_index(size);
+
+    if (bucket != -1) {
+        slab_cache_t *cache = kmalloc_caches[bucket];
+        slab_free(cache, (void*)header);
+    } else {
+        size_t total_size = size + sizeof(alloc_header_t);
+        uint64_t num_pages = ALIGN_UP(total_size, PAGE_SIZE) / PAGE_SIZE;
+        uintptr_t phys = (uintptr_t)header;
+
+        for (uint64_t i = 0; i < num_pages; i++) {
+            pmm_free_frame(phys + (i * PAGE_SIZE));
+        }
+    }
+}
