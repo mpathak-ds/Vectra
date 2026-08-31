@@ -34,6 +34,50 @@
 
 #define SCAUSE_IS_IRQ(scause) ((scause & 0x8000000000000000ULL) >> 63)
 
+#ifdef ARCH_SPEC_ARM64
+
+#define PT_ENTRIES        512
+#define PT_LEVELS         4
+#define VA_BITS_PER_LEVEL 9
+#define PAGE_SHIFT        12
+
+#define PTE_VALID         (1UL << 0)
+#define PTE_TABLE         (1UL << 1)
+
+#define PTE_ATTR_IDX(i)   (((uint64_t)(i) & 0x7) << 2)
+#define PTE_NS            (1UL << 5)
+#define PTE_AP_RW_EL1     (0UL << 6)
+#define PTE_AP_RW_ALL     (1UL << 6)
+#define PTE_AP_RO_EL1     (2UL << 6)
+#define PTE_AP_RO_ALL     (3UL << 6)
+#define PTE_SH_NON        (0UL << 8)
+#define PTE_SH_OUTER      (2UL << 8)
+#define PTE_SH_INNER      (3UL << 8)
+#define PTE_AF            (1UL << 10)
+#define PTE_NG            (1UL << 11)
+#define PTE_PXN           (1UL << 53)
+#define PTE_UXN           (1UL << 54)
+
+#define PTE_ADDR_MASK     0x0000FFFFFFFFF000UL
+#define PTE_ADDR(phys)    ((uint64_t)(phys) & PTE_ADDR_MASK)
+
+#define MAIR_IDX_NORMAL 0
+#define MAIR_IDX_DEVICE 1
+
+typedef struct pagetable_root {
+    uint64_t ttbr0_phys;
+    uint16_t asid;
+} pagetable_root_t;
+
+#define PROT_NONE   0x0
+#define PROT_READ   (1 << 0)
+#define PROT_WRITE  (1 << 1)
+#define PROT_EXEC   (1 << 2)
+
+#define PHYS_TO_VIRT(pa) ((void*)(uint64_t)(pa))
+
+#endif
+
 typedef struct {
     uint64_t x0,  x1,  x2,  x3,  x4,  x5,  x6,  x7;
     uint64_t x8,  x9,  x10, x11, x12, x13, x14, x15;
@@ -94,7 +138,7 @@ void cpu_set_vbar_el1(uint64_t val);
 void cpu_set_vbar_el2(uint64_t val);
 void cpu_set_vaif(uint64_t val);
 
-void enter_usermode(uint64_t user_pc, uint64_t user_sp, uint64_t user_page_table);
+void enter_usermode(uint64_t user_pc, uint64_t user_sp);
 
 void cpu_set_stvec(uint64_t addr);
 void cpu_set_tp(uint64_t addr);
