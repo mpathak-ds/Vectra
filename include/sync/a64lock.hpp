@@ -31,7 +31,7 @@ static inline void cpu_relax(void) {
     __asm__ volatile("wfe" ::: "memory");
 }
 
-static inline uint32_t arm64_atomic_exchange_acquire(volatile uint32_t *ptr, uint32_t new_val) {
+static inline uint32_t atomic_exchange_acquire(volatile uint32_t *ptr, uint32_t new_val) {
     uint32_t old_val;
     uint32_t status;
 

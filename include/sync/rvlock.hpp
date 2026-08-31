@@ -16,7 +16,7 @@ static inline void cpu_relax(void) {
     __asm__ volatile("fence rw, rw" ::: "memory");
 }
 
-static inline uint32_t riscv_atomic_exchange_acquire(volatile uint32_t *ptr, uint32_t new_val) {
+static inline uint32_t atomic_exchange_acquire(volatile uint32_t *ptr, uint32_t new_val) {
     uint32_t old_val;
 
     __asm__ volatile (
@@ -29,7 +29,7 @@ static inline uint32_t riscv_atomic_exchange_acquire(volatile uint32_t *ptr, uin
     return old_val;
 }
 
-static inline void riscv_atomic_store_release(volatile uint32_t *ptr, uint32_t new_val) {
+static inline void atomic_store_release(volatile uint32_t *ptr, uint32_t new_val) {
     __asm__ volatile (
         "fence rw, w\n\t"
         "sw zero, 0(%0)"
