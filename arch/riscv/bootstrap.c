@@ -49,9 +49,6 @@ void boot_main(uint64_t hartid)
     klog_info("early", "booting from cpu %d", hartid);
     klog_info("boot", "starting Vectra Kernel");
 
-    interrupts_init();
-    timer_init();
-
     klog_info("boot", "found boot heap to be : start=0x%x, end=0x%x", (uint8_t *)__heap_start, (uint8_t *)__heap_end);
 
     early_info.early_heap_start = (uint8_t *)__heap_start;
@@ -62,6 +59,9 @@ void boot_main(uint64_t hartid)
     early_info.machine_ram_total = cpu_get_memsize();
 
     klog_info("boot", "memory map: kernel base=0x%x, kernel end=0x%x", (uint8_t *)__text_start, (uint8_t *)__text_end);
+
+    interrupts_init();
+    timer_init();
 
     spin_lock_init(&boot_spinlock);
 

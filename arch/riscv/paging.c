@@ -21,7 +21,7 @@
 #include <libkern/string.hpp>
 
 __attribute__((aligned(4096)))
-static page_table_t kernel_page_table;
+static pte_t kernel_page_table[PT_ENTRIES];
 
 static inline pte_t pa_to_pte_ppn(uint64_t pa)
 {
@@ -39,17 +39,14 @@ static inline void vmm_install_page_table(page_table_t page_table)
 
     klog_info("vmm", "root page table physical address: 0x%x", pt_addr);
 
+    uint64_t satp_val = MAKE_SATP(pt_addr);
+
     asm volatile(
-        "srli t0, %0, 12\n\t"
-        "li   t1, 8\n\t"
-        "li   t2, 60\n\t"
-        "sll  t1, t1, t2\n\t"
-        "or   t0, t0, t1\n\t"
-        "csrw satp, t0\n\t"
+        "csrw satp, %0\n\t"
         "sfence.vma zero, zero"
         :
-        : "r"(pt_addr)
-        : "t0", "t1", "t2", "memory"
+        : "r"(satp_val)
+        : "memory"
     );
 }
 
@@ -60,11 +57,11 @@ pte_t *vmm_walk(page_table_t page_table, virt_addr_t va, BOOL alloc)
     uint32_t vpn0 = (va >> VA_VPN0_SHIFT) & VA_INDEX_MASK;
 
     pte_t *pte2 = &page_table[vpn2];
-    page_table_t *l1_table;
+    pte_t *l1_table;
 
     if (!(*pte2 & PTE_V)) {
         if (alloc) {
-            l1_table = (page_table_t *)pmm_alloc_frame();
+            l1_table = (pte_t *)pmm_alloc_frame();
             if (l1_table == NULL) {
                 return NULL;
             }
@@ -75,29 +72,29 @@ pte_t *vmm_walk(page_table_t page_table, virt_addr_t va, BOOL alloc)
             return NULL;
         }
     } else {
-        l1_table = (page_table_t *)pte_to_pa(*pte2); 
+        l1_table = (pte_t *)pte_to_pa(*pte2); 
     }
 
-    pte_t *pte1 = &(*l1_table)[vpn1];
-    page_table_t *l0_table;
+    pte_t *pte1 = &l1_table[vpn1];
+    pte_t *l0_table;
 
     if (!(*pte1 & PTE_V)) {
         if (alloc) {
-            l0_table = (page_table_t *)pmm_alloc_frame();
+            l0_table = (pte_t *)pmm_alloc_frame();
             if (l0_table == NULL) {
                 return NULL;
             }
-            memset(l1_table, 0, PAGE_SIZE);
+            memset(l0_table, 0, PAGE_SIZE);
 
             *pte1 = pa_to_pte_ppn((uint64_t)l0_table) | PTE_V;
         } else {
             return NULL;
         }
     } else {
-        l0_table = (page_table_t *)pte_to_pa(*pte1); 
+        l0_table = (pte_t *)pte_to_pa(*pte1); 
     }
 
-    pte_t *pte0 = &(*l0_table)[vpn0];
+    pte_t *pte0 = &l0_table[vpn0];
 
     return pte0;
 }
@@ -109,6 +106,8 @@ phys_addr_t vmm_virt_to_phys(page_table_t page_table, virt_addr_t va)
 
     pte = vmm_walk(page_table, va, FALSE);
     addr = pte_to_pa(*pte);
+
+    klog_info("vmm", "0x%x, 0x%x", *pte, addr);
 
     return addr | (va & 0xFFF);
 }
@@ -143,11 +142,11 @@ bool vmmk_map_page(virt_addr_t va, phys_addr_t pa, uint64_t flags)
 
 void vmm_init(boot_info_t *boot_info)
 {
-    memset(kernel_page_table, 0, sizeof(kernel_page_table));
+    memset(kernel_page_table, 0, PAGE_SIZE);
 
     uint64_t kernel_start = (phys_addr_t)boot_info->kernel_image_start; 
     
-    for (uint64_t addr = ALIGN(kernel_start, PAGE_SIZE); addr < ALIGN_UP((uint64_t)(kernel_start + boot_info->kernel_image_end), PAGE_SIZE); addr += PAGE_SIZE) {
+    for (uint64_t addr = 0x80000000; addr < 0x8F000000; addr += PAGE_SIZE) {
         if (vmmk_map_page(addr, addr, PAGE_KERNEL_EXEC) == FALSE) {
             panic("vmm", "unable to map kernel page at 0x%x", addr);
         }
@@ -155,6 +154,7 @@ void vmm_init(boot_info_t *boot_info)
 
     klog_info("vmm", "installing page table");
 
+    klog_info("vmm", "virt to phys returned 0x%x", vmm_virt_to_phys(kernel_page_table, 0x80000000));
     vmm_install_page_table(kernel_page_table);
 
     klog_info("vmm", "paging initialized, page table at 0x%x", (uint64_t)kernel_page_table);

@@ -38,7 +38,7 @@
 #define PT_ENTRIES        512
 
 typedef uint64_t pte_t;
-typedef pte_t page_table_t[PT_ENTRIES];
+typedef pte_t *page_table_t;
 
 #define VA_VPN2_SHIFT     30
 #define VA_VPN1_SHIFT     21
