@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: base/sync/spinlock.cpp
+ * Path: base/sync/spinlock.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: platform/virt_rv/uart.cpp
+ * Path: platform/virt_rv/uart.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -14,6 +14,7 @@
  */
 
 #include <drivers/uart.hpp>
+#include <boot/cpu.hpp>
 
 #define UART_BASE 0x10000000UL
 

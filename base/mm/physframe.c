@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: base/mm/physframe.cpp
+ * Path: base/mm/physframe.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

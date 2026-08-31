@@ -31,5 +31,6 @@ SECTIONS
     . += 0x400000; /* Reserve 4 MB for early boot heap */
     __heap_end = .;
 
+    __text_end = .;
     /DISCARD/ : { *(.comment) *(.gnu*) }
 }

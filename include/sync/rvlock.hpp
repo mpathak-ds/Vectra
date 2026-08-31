@@ -13,7 +13,7 @@ typedef struct spinlock {
 #define SPINLOCK_INIT { .locked = 0 }
 
 static inline void cpu_relax(void) {
-    __asm__ volatile("wfi" ::: "memory");
+    __asm__ volatile("fence rw, rw" ::: "memory");
 }
 
 static inline uint32_t riscv_atomic_exchange_acquire(volatile uint32_t *ptr, uint32_t new_val) {
@@ -31,18 +31,20 @@ static inline uint32_t riscv_atomic_exchange_acquire(volatile uint32_t *ptr, uin
 
 static inline void riscv_atomic_store_release(volatile uint32_t *ptr, uint32_t new_val) {
     __asm__ volatile (
-        "amoswap.w.rl zero, %1, (%0)"
+        "fence rw, w\n\t"
+        "sw zero, 0(%0)"
         :
-        : "r" (ptr), "r" (new_val)
+        : "r" (ptr)
         : "memory"
     );
+
 }
 
 static inline uint32_t atomic_load(const volatile uint32_t *ptr) {
     uint32_t val;
     __asm__ volatile (
-        "    lw      %0, 0(%1)        \n"
-        "    fence   rw, rw           \n"
+        "lw %0, 0(%1)\n\t"
+        "fence r, rw"
         : "=r" (val)
         : "r" (ptr)
         : "memory"

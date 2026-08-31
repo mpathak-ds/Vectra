@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: libkern/framework.cpp
+ * Path: libkern/framework.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

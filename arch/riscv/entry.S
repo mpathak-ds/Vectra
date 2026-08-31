@@ -1,11 +1,10 @@
 .section ".text.boot"
 
 .equ STACK_TOP, 0x82000000
+.equ STACK_SIZE, 65536
 
 .global _start
 _start:
-    # csrr t0, mhartid
-    # bne t0, zero, park_loop
     j master_core
 
 park_loop:
@@ -13,7 +12,12 @@ park_loop:
     j park_loop
 
 master_core:
-    li sp, STACK_TOP
+    # separate stack for each new cpu
+    li t0, STACK_TOP
+    li t1, STACK_SIZE
+    mul t1, a0, t1
+    add t0, t0, t1
+    mv sp, t0
 
     la t0, __bss_start
     la t1, __bss_end

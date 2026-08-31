@@ -212,6 +212,9 @@ DEFINE_KLOG_FUNCTION(klog_panic,    Panic)
 void panic(const char *subsystem,
            const char *format, ...)
 {
+    uint64_t cpu_id = cpu_get_cpu_id();
+    
+    klog_panic("panic", "panic on cpu %d", cpu_id);
     uart_puts(level_name(Panic));
     uart_puts(" ");
     uart_puts(COLOR_MAGENTA);
@@ -225,7 +228,6 @@ void panic(const char *subsystem,
     va_end(args);
 
     uart_puts("\n");
-
 #ifdef ARCH_SPEC_ARM64
     arm64_registers_t *regs = dump_registers();
 
@@ -254,6 +256,35 @@ void panic(const char *subsystem,
         regs->x20, regs->x21, regs->x22, regs->x23,
         regs->x24, regs->x25, regs->x26, regs->x27,
         regs->x28, regs->x29, regs->lr,  regs->sp
+    );
+#elif defined(ARCH_SPEC_RISCV)
+    riscv_registers_t *regs = dump_registers();
+    
+    klog_panic("cpu", 
+        "x0 =0x%x  ra =0x%x "
+        "sp =0x%x  gp =0x%x\n"
+        "tp =0x%x  t0 =0x%x "
+        "t1 =0x%x  t2 =0x%x\n"
+        "s0 =0x%x  s1 =0x%x "
+        "a0 =0x%x  a1 =0x%x\n"
+        "a2 =0x%x  a3 =0x%x "
+        "a4 =0x%x  a5 =0x%x\n"
+        "a6 =0x%x  a7 =0x%x "
+        "s2 =0x%x  s3 =0x%x\n"
+        "s4 =0x%x  s5 =0x%x "
+        "s6 =0x%x  s7 =0x%x\n"
+        "s8 =0x%x  s9 =0x%x "
+        "s10=0x%x  s11=0x%x\n"
+        "t3 =0x%x  t4 =0x%x "
+        "t5 =0x%x  t6 =0x%x", 
+        regs->zero, regs->ra,  regs->sp,  regs->gp,
+        regs->tp,   regs->t0,  regs->t1,  regs->t2,
+        regs->s0,   regs->s1,  regs->a0,  regs->a1,
+        regs->a2,   regs->a3,  regs->a4,  regs->a5,
+        regs->a6,   regs->a7,  regs->s2,  regs->s3,
+        regs->s4,   regs->s5,  regs->s6,  regs->s7,
+        regs->s8,   regs->s9,  regs->s10, regs->s11,
+        regs->t3,   regs->t4,  regs->t5,  regs->t6
     );
 #endif
 

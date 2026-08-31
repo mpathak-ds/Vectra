@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: arch/arm64/bootstrap.cpp
+ * Path: arch/arm64/bootstrap.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -15,6 +15,7 @@
 
 #include <osdef.hpp>
 #include <boot/cpu.hpp>
+#include <sync/atomic.hpp>
 #include <drivers/timer.hpp>
 #include <drivers/gic.hpp>
 #include <libkern/klog.hpp>

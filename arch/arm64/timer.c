@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: arch/arm64/timer.cpp
+ * Path: arch/arm64/timer.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: arch/arm64/cpu.cpp
+ * Path: arch/arm64/cpu.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -94,7 +94,6 @@ void dmbsy()
 {
     asm volatile("dmb sy" : : : "memory");
 }
-
 
 uint64_t cpu_get_membase()
 {

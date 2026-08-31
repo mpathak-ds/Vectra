@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: base/mm/kheap.cpp
+ * Path: base/ob/ob.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

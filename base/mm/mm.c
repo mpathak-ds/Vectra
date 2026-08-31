@@ -26,10 +26,10 @@ void mm_init(boot_info_t *boot_info)
 {
     mm_boot_init(boot_info);
 
-    pmm_init(boot_info->machine_ram_base, boot_info->machine_ram_total);
+    pmm_init((uint64_t)boot_info->kernel_image_start, boot_info->machine_ram_total);
 
     //free all of memory, mark unused
-    pmm_free_region(boot_info->machine_ram_base, boot_info->machine_ram_total);
+    pmm_free_region((uint64_t)boot_info->kernel_image_start, boot_info->machine_ram_total);
 
     uintptr_t kern_start = (uintptr_t)boot_info->kernel_image_start;
     uintptr_t kern_end   = (uintptr_t)boot_info->early_heap_end;

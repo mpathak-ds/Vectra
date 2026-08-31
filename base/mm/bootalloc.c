@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: base/mm/bootalloc.cpp
+ * Path: base/mm/bootalloc.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

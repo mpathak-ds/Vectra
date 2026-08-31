@@ -15,8 +15,9 @@ ifeq ($(PLATFORM),opi)
 endif
 
 ifeq ($(ARCH),riscv)
-	COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -fno-stack-protector -mcmodel=medany -DARCH_SPEC_RISCV
+	COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -fno-stack-protector -ffixed-tp -mcmodel=medany -DARCH_SPEC_RISCV
 	LDFLAGS       := -T arch/riscv/link.ld -nostdlib $(CFLAGS)
+	PLATFORM	  := virt_rv
 else ifeq ($(ARCH),arm64)
 	COMMON_FLAGS  := -Wall -ffreestanding -nostdlib -mgeneral-regs-only -fno-stack-protector -DARCH_SPEC_ARM64 #-g
 	LDFLAGS       := -T arch/arm64/link.ld -nostdlib $(CFLAGS)

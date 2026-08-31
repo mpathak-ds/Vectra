@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: libkern/klog.cpp
+ * Path: libkern/klog.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

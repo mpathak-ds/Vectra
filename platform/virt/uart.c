@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: platform/virt/uart.cpp
+ * Path: platform/virt/uart.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

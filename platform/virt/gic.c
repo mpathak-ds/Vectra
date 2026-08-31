@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: platform/virt/gic.cpp
+ * Path: platform/virt/gic.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

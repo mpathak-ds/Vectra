@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: arch/riscv/cpu.cpp
+ * Path: arch/riscv/cpu.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -21,6 +21,28 @@ extern void enter_usermode(uint64_t user_pc, uint64_t user_sp);
 void cpu_set_stvec(uint64_t addr)
 {
     asm volatile("csrw stvec, %0" : : "r"(addr));
+}
+
+void cpu_set_tp(uint64_t addr)
+{
+    register unsigned long tp asm("tp");
+    tp = addr;
+}
+
+uint64_t cpu_get_sstatus()
+{
+    uint64_t sstatus;
+
+    asm volatile("csrr %0, sstatus" : "=r"(sstatus));
+    return sstatus;
+}
+
+uint64_t cpu_get_sie()
+{
+    uint64_t sie;
+
+    asm volatile("csrr %0, sie" : "=r"(sie));
+    return sie;
 }
 
 uint64_t cpu_get_scause()
@@ -45,6 +67,24 @@ uint64_t cpu_get_stval()
 
     asm volatile("csrr %0, stval" : "=r"(stval));
     return stval;
+}
+
+uint64_t cpu_get_tp()
+{
+    register unsigned long tp asm("tp");
+    return tp;
+}
+
+uint64_t cpu_get_cpu_id()
+{
+    riscv_hart_info_t *hart_info = (riscv_hart_info_t *)cpu_get_tp();
+
+    return hart_info->hartid;
+}
+
+void cpu_halt_cpu_id(uint64_t cpu_id)
+{
+    sbi_send_ipi_all();
 }
 
 void halt()

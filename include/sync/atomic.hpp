@@ -39,10 +39,17 @@ static inline void spin_lock(spinlock_t *lock) {
     }
 #endif
 #ifdef ARCH_SPEC_RISCV
-    while (riscv_atomic_exchange_acquire(&lock->locked, 1) != 0) {
-        while (lock->locked != 0) {
-            cpu_relax();
+    if (riscv_atomic_exchange_acquire(&lock->locked, 1) == 0) {
+        return;
+    }
+
+    while (1) {
+        if (atomic_load(&lock->locked) == 0) {
+            if (riscv_atomic_exchange_acquire(&lock->locked, 1) == 0) {
+                return;
+            }
         }
+        cpu_relax();
     }
 #endif
 }

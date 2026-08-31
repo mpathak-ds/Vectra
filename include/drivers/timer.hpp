@@ -35,6 +35,11 @@ void timer_enable();
 void timer_unmask();
 void timer_mask();
 
+void timer_set_cmp(uint64_t cmp_value);
+uint64_t timer_get_cmp();
+
+uint64_t timer_get_time();
+
 void timer_wait(uint64_t ticks);
 
 void timer_init();

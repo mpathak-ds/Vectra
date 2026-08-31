@@ -18,10 +18,19 @@
 
 #include <osdef.hpp>
 
-#define EXC_TYPE_SYNC 1
-#define EXC_TYPE_IRQ  2
-#define EXC_TYPE_FIQ  3
-#define EXC_TYPE_SERR 4
+#define MAX_CPUS 32
+
+#define EXC_TYPE_SYNC   1
+#define EXC_TYPE_IRQ    2
+#define EXC_TYPE_FIQ    3
+#define EXC_TYPE_SERR   4
+
+#define EXC_TYPE_SSI    1
+#define EXC_TYPE_STI    5
+#define EXC_TYPE_SEI    9
+
+#define PRIV_USER       0
+#define PRIV_SUPERVISOR 1
 
 #define SCAUSE_IS_IRQ(scause) ((scause & 0x8000000000000000ULL) >> 63)
 
@@ -70,9 +79,14 @@ typedef struct {
 } riscv_registers_t;
 
 typedef struct {
-    uint64_t kernel_stack;
-    uint64_t kernel_satp;
-} riscv_hart_info;
+    uint64_t stack;
+    uint64_t hartid;
+} riscv_hart_info_t;
+
+typedef struct {
+    long error;
+    long value;
+} sbiret_t;
 
 typedef int32_t (*interrupt_handler_t)(uint32_t, arm64_registers_t*);
 
@@ -83,6 +97,7 @@ void cpu_set_vaif(uint64_t val);
 void enter_usermode(uint64_t user_pc, uint64_t user_sp);
 
 void cpu_set_stvec(uint64_t addr);
+void cpu_set_tp(uint64_t addr);
 
 void halt();
 
@@ -100,16 +115,31 @@ uint64_t read_elr_el2();
 uint64_t read_esr_el1();
 uint64_t read_elr_el1();
 
+uint64_t cpu_get_sstatus();
+uint64_t cpu_get_sie();
 uint64_t cpu_get_scause();
 uint64_t cpu_get_sepc();
 uint64_t cpu_get_stval();
+uint64_t cpu_get_tp();
+uint64_t cpu_get_cpu_id();
+
+void cpu_halt_cpu_id(uint64_t cpu_id);
 
 uint64_t cpu_get_membase();
 uint64_t cpu_get_memsize();
 
+sbiret_t sbi_ecall(int ext, int fid, unsigned long arg0, unsigned long arg1, unsigned long arg2, unsigned long arg3);
+void sbi_putchar(char c);
+sbiret_t sbi_start_hart(uint64_t hartid, uint64_t pc, uint64_t priv);
+void sbi_send_ipi_all();
+
 void interrupts_enable(bool irq, bool fiq);
 void interrupts_init();
 
+#ifdef ARCH_SPEC_ARM64
 extern arm64_registers_t *dump_registers();
+#elif defined(ARCH_SPEC_RISCV)
+extern riscv_registers_t *dump_registers();
+#endif
 
 #endif

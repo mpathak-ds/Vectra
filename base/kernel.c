@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: base/kernel.cpp
+ * Path: base/kernel.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -23,6 +23,7 @@ void kernel_main(boot_info_t *boot_info)
 {
     klog_info("kern", "initializing kernel");
     mm_init(boot_info);
+    vmm_init(boot_info);
     ob_init();
     object_test();
     

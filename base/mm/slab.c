@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: base/mm/slab.cpp
+ * Path: base/mm/slab.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

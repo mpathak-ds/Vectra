@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: arch/arm64/regs.cpp
+ * Path: arch/arm64/regs.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.

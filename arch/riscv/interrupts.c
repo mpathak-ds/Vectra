@@ -1,6 +1,6 @@
 /*
  * Vectra Kernel
- * Path: arch/riscv/interrupts.cpp
+ * Path: arch/riscv/interrupts.c
  *
  * Copyright (c) 2026 Driftless Software. All rights reserved.
  * Property of Driftless Software.
@@ -19,10 +19,17 @@
 
 extern void trap_vector(void); //declaring it as a function gives you the address pointer
 extern void interrupt_exception_handler(uint32_t usermode, riscv_registers_t *regs);
+extern void timer_handler(riscv_registers_t *regs);
 
 void interrupts_set_tvec(uint64_t val)
 {
     cpu_set_stvec(val);
+}
+
+void interrupts_enable(bool irq, bool fiq)
+{
+    asm volatile("csrs sie, %0" : : "r"(0x02));
+    asm volatile("csrs sstatus, %0" : : "r"(0x02));
 }
 
 void interrupts_init(void)
@@ -30,10 +37,12 @@ void interrupts_init(void)
     //initialize exceptions first
     klog_info("boot", "enabling exceptions...");
     interrupts_set_tvec((uint64_t)trap_vector);
+    interrupts_enable(FALSE, FALSE);
 }
 
 void interrupt_exception_handler(uint32_t usermode, riscv_registers_t *regs)
 {
+    asm volatile("csrc sip, %0" : : "r"(0x02));
     uint64_t scause = cpu_get_scause();
     uint64_t sepc = cpu_get_sepc();
     uint64_t stval = cpu_get_stval();
@@ -68,6 +77,17 @@ void interrupt_exception_handler(uint32_t usermode, riscv_registers_t *regs)
             regs->t3,   regs->t4,  regs->t5,  regs->t6
         );
 
-        for (;;) asm volatile("wfi");
+        panic("cpu", "exception");
+    } else {
+        switch(scause & 0x7FFFFFFFFFFFFFFF) {
+            case EXC_TYPE_SSI: {
+                halt();
+                break;
+            }
+            case EXC_TYPE_STI: {
+                timer_handler(regs);
+                break;
+            }
+        }
     }
 }

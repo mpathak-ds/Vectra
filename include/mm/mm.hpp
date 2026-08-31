@@ -19,9 +19,16 @@
 #include <osdef.hpp>
 #include <sync/atomic.hpp>
 
+#ifdef ARCH_SPEC_RISCV
+#include <mm/rvpaging.hpp>
+#endif
+
 #define PAGE_SIZE 4096
 #define PAGE_SHIFT 12
 #define BITMAP_BIT_SIZE 8
+
+typedef uint64_t phys_addr_t;
+typedef uint64_t virt_addr_t;
 
 void mm_boot_init(boot_info_t *boot_info);
 void *mm_boot_alloc(uint64_t size);
@@ -76,5 +83,13 @@ void *kcalloc(size_t num, size_t size);
 void *krealloc(void *ptr, size_t new_size);
 
 void mm_init(boot_info_t *boot_info);
+
+phys_addr_t vmm_virt_to_phys(page_table_t page_table, virt_addr_t va);
+bool vmm_map_page(page_table_t page_table, virt_addr_t va, phys_addr_t pa, uint64_t flags);
+
+phys_addr_t vmmk_virt_to_phys(virt_addr_t va);
+bool vmmk_map_page(virt_addr_t va, phys_addr_t pa, uint64_t flags);
+
+void vmm_init(boot_info_t *boot_info);
 
 #endif

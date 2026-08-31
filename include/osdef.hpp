@@ -16,7 +16,10 @@
 #ifndef KERN_BASE_H
 #define KERN_BASE_H
 
-#define NULL 0
+#define NULL  0
+#define TRUE  1
+#define FALSE 0
+#define ALIGN(num, align) ((num) & ~((align) - 1))
 #define ALIGN_UP(num, align) (((num) + ((align) - 1)) & ~((align) - 1))
 #ifndef alignof
 #define alignof __alignof__
@@ -44,6 +47,7 @@ typedef uint64_t uintptr_t;
 typedef int64_t  ssize_t;
 
 typedef uint8_t bool; //not using cpp anymore
+typedef uint32_t BOOL;
 
 typedef uint32_t OSSTATUS;
 
@@ -52,6 +56,7 @@ typedef struct boot_info
     uint8_t *early_heap_start;
     uint8_t *early_heap_end;
     uint8_t *kernel_image_start;
+    uint8_t *kernel_image_end;
 
     uint64_t machine_ram_base;
     uint64_t machine_ram_total;
