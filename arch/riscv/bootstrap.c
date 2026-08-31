@@ -23,6 +23,7 @@ extern char __heap_start[];
 extern char __heap_end[];
 extern char __text_start[];
 extern char __text_end[];
+extern char __rodata_end[];
 
 void kernel_main(boot_info_t *boot_info);
 
@@ -55,6 +56,7 @@ void boot_main(uint64_t hartid)
     early_info.early_heap_end = (uint8_t *)__heap_end;
     early_info.kernel_image_start = (uint8_t *)__text_start;
     early_info.kernel_image_end = (uint8_t *)__text_end;
+    early_info.kernel_readonly_end = (uint8_t *)__rodata_end;
     early_info.machine_ram_base = cpu_get_membase();
     early_info.machine_ram_total = cpu_get_memsize();
 

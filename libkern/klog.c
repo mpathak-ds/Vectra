@@ -151,6 +151,43 @@ static void klog_vprintf(const char *format, va_list args)
                 );
                 break;
 
+            case 'l': {
+                format++;
+
+                switch(*format) {
+                    case 'd':
+                        put_signed(va_arg(args, long));
+                        break;
+
+                    case 'u':
+                        put_unsigned(va_arg(args, unsigned long), 10);
+                        break;
+
+                    case 'x':
+                        put_unsigned(va_arg(args, unsigned long), 16);
+                        break;
+
+                    case 'l': {
+                        format++;
+
+                        switch(*format) {
+                            case 'd':
+                                put_signed(va_arg(args, long long));
+                                break;
+
+                            case 'u':
+                                put_unsigned(va_arg(args, unsigned long long), 10);
+                                break;
+
+                            case 'x':
+                                put_unsigned(va_arg(args, unsigned long long), 16);
+                                break;
+                        }
+                    }
+                }
+                break;
+            }
+
             default:
                 // Preserve unknown format specifiers.
                 uart_putc('%');
@@ -236,22 +273,22 @@ void panic(const char *subsystem,
     arm64_registers_t *regs = dump_registers();
 
     klog_panic("cpu", 
-        "x0 =0x%x  x1 =0x%x "
-        "x2 =0x%x  x3 =0x%x\n"
-        "x4 =0x%x  x5 =0x%x "
-        "x6 =0x%x  x7 =0x%x\n"
-        "x8 =0x%x  x9 =0x%x "
-        "x10=0x%x  x11=0x%x\n"
-        "x12=0x%x  x13=0x%x "
-        "x14=0x%x  x15=0x%x\n"
-        "x16=0x%x  x17=0x%x "
-        "x18=0x%x  x19=0x%x\n"
-        "x20=0x%x  x21=0x%x "
-        "x22=0x%x  x23=0x%x\n"
-        "x24=0x%x  x25=0x%x "
-        "x26=0x%x  x27=0x%x\n"
-        "x28=0x%x  fp =0x%x "
-        "lr =0x%x  sp =0x%x", 
+        "x0 =0x%llx  x1 =0x%llx "
+        "x2 =0x%llx  x3 =0x%llx\n"
+        "x4 =0x%llx  x5 =0x%llx "
+        "x6 =0x%llx  x7 =0x%llx\n"
+        "x8 =0x%llx  x9 =0x%llx "
+        "x10=0x%llx  x11=0x%llx\n"
+        "x12=0x%llx  x13=0x%llx "
+        "x14=0x%llx  x15=0x%llx\n"
+        "x16=0x%llx  x17=0x%llx "
+        "x18=0x%llx  x19=0x%llx\n"
+        "x20=0x%llx  x21=0x%llx "
+        "x22=0x%llx  x23=0x%llx\n"
+        "x24=0x%llx  x25=0x%llx "
+        "x26=0x%llx  x27=0x%llx\n"
+        "x28=0x%llx  fp =0x%llx "
+        "lr =0x%llx  sp =0x%llx", 
         regs->x0,  regs->x1,  regs->x2,  regs->x3,
         regs->x4,  regs->x5,  regs->x6,  regs->x7,
         regs->x8,  regs->x9,  regs->x10, regs->x11,
@@ -265,22 +302,22 @@ void panic(const char *subsystem,
     riscv_registers_t *regs = dump_registers();
     
     klog_panic("cpu", 
-        "x0 =0x%x  ra =0x%x "
-        "sp =0x%x  gp =0x%x\n"
-        "tp =0x%x  t0 =0x%x "
-        "t1 =0x%x  t2 =0x%x\n"
-        "s0 =0x%x  s1 =0x%x "
-        "a0 =0x%x  a1 =0x%x\n"
-        "a2 =0x%x  a3 =0x%x "
-        "a4 =0x%x  a5 =0x%x\n"
-        "a6 =0x%x  a7 =0x%x "
-        "s2 =0x%x  s3 =0x%x\n"
-        "s4 =0x%x  s5 =0x%x "
-        "s6 =0x%x  s7 =0x%x\n"
-        "s8 =0x%x  s9 =0x%x "
-        "s10=0x%x  s11=0x%x\n"
-        "t3 =0x%x  t4 =0x%x "
-        "t5 =0x%x  t6 =0x%x", 
+        "x0 =0x%llx  ra =0x%llx "
+        "sp =0x%llx  gp =0x%llx\n"
+        "tp =0x%llx  t0 =0x%llx "
+        "t1 =0x%llx  t2 =0x%llx\n"
+        "s0 =0x%llx  s1 =0x%llx "
+        "a0 =0x%llx  a1 =0x%llx\n"
+        "a2 =0x%llx  a3 =0x%llx "
+        "a4 =0x%llx  a5 =0x%llx\n"
+        "a6 =0x%llx  a7 =0x%llx "
+        "s2 =0x%llx  s3 =0x%llx\n"
+        "s4 =0x%llx  s5 =0x%llx "
+        "s6 =0x%llx  s7 =0x%llx\n"
+        "s8 =0x%llx  s9 =0x%llx "
+        "s10=0x%llx  s11=0x%llx\n"
+        "t3 =0x%llx  t4 =0x%llx "
+        "t5 =0x%llx  t6 =0x%llx", 
         regs->zero, regs->ra,  regs->sp,  regs->gp,
         regs->tp,   regs->t0,  regs->t1,  regs->t2,
         regs->s0,   regs->s1,  regs->a0,  regs->a1,

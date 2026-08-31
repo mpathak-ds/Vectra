@@ -1,10 +1,18 @@
-.section ".text.boot"
+.section ".trampoline", "ax"
 .global trap_vector
+.global enter_usermode
 .align 4
 
+.extern page_table_installed
+.extern kernel_page_table
 .extern interrupt_exception_handler
 
 trap_vector:
+    csrrw sp, sscratch, sp
+    bnez sp, from_usermode
+
+    csrrw sp, sscratch, sp
+
     addi sp, sp, -272
 
     sd x5,  40(sp)
@@ -13,15 +21,29 @@ trap_vector:
 
     addi t0, sp, 272
     sd t0,  16(sp)
-
-    csrrw sp, sscratch, sp
-    bnez sp, from_usermode
-
-    csrrw sp, sscratch, sp
+    
     li t0, 0
     j stackframe_create
 
 from_usermode:
+    csrr t1, satp
+    beqz t1, enter_interrupt
+    la t1, kernel_page_table
+    srli t1, t1, 12
+    li t2, 8
+    slli t2, t2, 60
+    or t1, t1, t2
+    csrw satp, t1
+    sfence.vma zero, zero
+
+enter_interrupt:
+    addi sp, sp, -272
+    sd x5,  40(sp)
+    sd x6,  48(sp)
+    sd x7,  56(sp)
+    csrrw x5, sscratch, zero
+    sd x5,  16(sp)
+    ld x5,  40(sp)
     li t0, 1
 
 stackframe_create:
@@ -59,8 +81,6 @@ stackframe_create:
     csrr t2, sepc
     sd t2, 264(sp)
 
-    csrw sscratch, zero
-
     mv a0, t0
     mv a1, sp
     call interrupt_exception_handler
@@ -70,6 +90,50 @@ stackframe_create:
     ld t2, 264(sp)
     csrw sepc, t2
 
+    li t1, 0x100
+    and t0, t1, t1
+    bnez t0, to_kernel_mode
+
+to_user_mode:
+    addi t0, sp, 272
+    csrw sscratch, t0
+    ld t0, 16(sp)
+    
+    ld x31, 248(sp)       # t6
+    ld x30, 240(sp)       # t5
+    ld x29, 232(sp)       # t4
+    ld x28, 224(sp)       # t3
+    ld x27, 216(sp)       # s11
+    ld x26, 208(sp)       # s10
+    ld x25, 200(sp)       # s9
+    ld x24, 192(sp)       # s8
+    ld x23, 184(sp)       # s7
+    ld x22, 176(sp)       # s6
+    ld x21, 168(sp)       # s5
+    ld x20, 160(sp)       # s4
+    ld x19, 152(sp)       # s3
+    ld x18, 144(sp)       # s2
+    ld x17, 136(sp)       # a7
+    ld x16, 128(sp)       # a6
+    ld x15, 120(sp)       # a5
+    ld x14, 112(sp)       # a4
+    ld x13, 104(sp)       # a3
+    ld x12, 96(sp)        # a2
+    ld x11, 88(sp)        # a1
+    ld x10, 80(sp)        # a0
+    ld x9,  72(sp)        # s1
+    ld x8,  64(sp)        # s0/fp
+    ld x7,  56(sp)        # t2
+    ld x6,  48(sp)        # t1
+    ld x5,  40(sp)        # t0
+    ld x4,  32(sp)        # tp
+    ld x3,  24(sp)        # gp
+    ld x1,  8(sp)         # ra
+    
+    mv sp, t0
+    sret
+
+to_kernel_mode:
     ld x31, 248(sp)       # t6
     ld x30, 240(sp)       # t5
     ld x29, 232(sp)       # t4
@@ -102,5 +166,36 @@ stackframe_create:
     ld x1,  8(sp)         # ra
 
     addi sp, sp, 272
+    sret
+
+# usermode.S stuff
+
+enter_usermode:
+    li t0, 0x100
+    csrc sstatus, t0
+
+    csrw sscratch, sp
+
+    csrw sepc, a0
+    mv sp, a1
+
+    mv t1, a2
+    srli t1, t1, 12
+    li t2, 8
+    slli t2, t2, 60
+    or t1, t1, t2
+    csrw satp, t1
+    sfence.vma zero, zero
+
+    mv t0, zero
+    mv t1, zero
+    mv t2, zero
+    mv t3, zero
+    mv t4, zero
+    mv t5, zero
+    mv t6, zero
+    mv a0, zero
+    mv a1, zero
+    mv a2, zero
 
     sret

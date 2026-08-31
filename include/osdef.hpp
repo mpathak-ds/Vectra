@@ -59,6 +59,7 @@ typedef struct boot_info
     uint8_t *early_heap_end;
     uint8_t *kernel_image_start;
     uint8_t *kernel_image_end;
+    uint8_t *kernel_readonly_end;
 
     uint64_t machine_ram_base;
     uint64_t machine_ram_total;

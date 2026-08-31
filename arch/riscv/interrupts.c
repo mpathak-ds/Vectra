@@ -48,24 +48,28 @@ void interrupt_exception_handler(uint32_t usermode, riscv_registers_t *regs)
     uint64_t stval = cpu_get_stval();
 
     if (!SCAUSE_IS_IRQ(scause)) {
+        if ((scause & 0x7FFFFFFFFFFFFFFF) == 15 || (scause & 0x7FFFFFFFFFFFFFFF) == 13 || (scause & 0x7FFFFFFFFFFFFFFF) == 12) {
+            klog_critical("cpu", "page fault at 0x%llx", stval);
+        }
+
         klog_critical("cpu", 
-            "%c-MODE EXCEPTION %d: SCAUSE=0x%x, SEPC=0x%x, STVAL=0x%x\n"
-            "x0 =0x%x  ra =0x%x "
-            "sp =0x%x  gp =0x%x\n"
-            "tp =0x%x  t0 =0x%x "
-            "t1 =0x%x  t2 =0x%x\n"
-            "s0 =0x%x  s1 =0x%x "
-            "a0 =0x%x  a1 =0x%x\n"
-            "a2 =0x%x  a3 =0x%x "
-            "a4 =0x%x  a5 =0x%x\n"
-            "a6 =0x%x  a7 =0x%x "
-            "s2 =0x%x  s3 =0x%x\n"
-            "s4 =0x%x  s5 =0x%x "
-            "s6 =0x%x  s7 =0x%x\n"
-            "s8 =0x%x  s9 =0x%x "
-            "s10=0x%x  s11=0x%x\n"
-            "t3 =0x%x  t4 =0x%x "
-            "t5 =0x%x  t6 =0x%x", 
+            "%c-MODE EXCEPTION %d: SCAUSE=0x%llx, SEPC=0x%llx, STVAL=0x%llx\n"
+            "x0 =0x%llx  ra =0x%llx "
+            "sp =0x%llx  gp =0x%llx\n"
+            "tp =0x%llx  t0 =0x%llx "
+            "t1 =0x%llx  t2 =0x%llx\n"
+            "s0 =0x%llx  s1 =0x%llx "
+            "a0 =0x%llx  a1 =0x%llx\n"
+            "a2 =0x%llx  a3 =0x%llx "
+            "a4 =0x%llx  a5 =0x%llx\n"
+            "a6 =0x%llx  a7 =0x%llx "
+            "s2 =0x%llx  s3 =0x%llx\n"
+            "s4 =0x%llx  s5 =0x%llx "
+            "s6 =0x%llx  s7 =0x%llx\n"
+            "s8 =0x%llx  s9 =0x%llx "
+            "s10=0x%llx  s11=0x%llx\n"
+            "t3 =0x%llx  t4 =0x%llx "
+            "t5 =0x%llx  t6 =0x%llx", 
             usermode == 1 ? 'U' : 'S', (scause & 0x7FFFFFFFFFFFFFFF), scause, sepc, stval,
             regs->zero, regs->ra,  regs->sp,  regs->gp,
             regs->tp,   regs->t0,  regs->t1,  regs->t2,

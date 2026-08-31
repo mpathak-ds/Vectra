@@ -94,7 +94,7 @@ void cpu_set_vbar_el1(uint64_t val);
 void cpu_set_vbar_el2(uint64_t val);
 void cpu_set_vaif(uint64_t val);
 
-void enter_usermode(uint64_t user_pc, uint64_t user_sp);
+void enter_usermode(uint64_t user_pc, uint64_t user_sp, uint64_t user_page_table);
 
 void cpu_set_stvec(uint64_t addr);
 void cpu_set_tp(uint64_t addr);
@@ -141,5 +141,7 @@ extern arm64_registers_t *dump_registers();
 #elif defined(ARCH_SPEC_RISCV)
 extern riscv_registers_t *dump_registers();
 #endif
+
+void create_user_process();
 
 #endif

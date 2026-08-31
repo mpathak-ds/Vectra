@@ -11,9 +11,20 @@ SECTIONS
         *(.text*)
     }
 
+    . = ALIGN(0x1000);
+    __trampoline_start = .;
+
+    .trampoline : {
+        *(.trampoline)
+    }
+
+    __trampoline_end = .;
+
     .rodata : ALIGN(8) {
         *(.rodata*)
     }
+
+    __rodata_end = .;
 
     .data : ALIGN(8) {
         *(.data*)

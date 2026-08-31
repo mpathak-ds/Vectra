@@ -16,8 +16,6 @@
 #include <osdef.hpp>
 #include <boot/cpu.hpp>
 
-extern void enter_usermode(uint64_t user_pc, uint64_t user_sp);
-
 void cpu_set_stvec(uint64_t addr)
 {
     asm volatile("csrw stvec, %0" : : "r"(addr));

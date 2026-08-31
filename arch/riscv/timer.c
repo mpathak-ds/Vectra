@@ -65,6 +65,15 @@ void timer_enable()
     asm volatile("csrs sie, %0" : : "r"(0x20));
 }
 
+void timer_wait(uint64_t ticks)
+{
+    uint64_t end = global_ticks + ticks;
+
+    while (global_ticks < end) {
+        ;
+    }
+}
+
 void timer_init()
 {
     uint64_t timer_value = timer_get_time();

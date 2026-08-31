@@ -19,6 +19,8 @@ SECTIONS
         *(.rodata*)
     }
 
+    __rodata_end = .;
+
     .data : ALIGN(8) {
         *(.data*)
     }

@@ -27,11 +27,10 @@
 #define PTE_A             (1ULL << 6)   // Accessed
 #define PTE_D             (1ULL << 7)   // Dirty
 
-#define PAGE_KERNEL_EXEC  (PTE_V | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D)
+#define PAGE_KERNEL_EXEC  (PTE_V | PTE_R | PTE_X | PTE_A | PTE_D)
 #define PAGE_KERNEL_DATA  (PTE_V | PTE_R | PTE_W | PTE_A | PTE_D)
 #define PAGE_TABLE_NODE   (PTE_V)
 
-#define SATP_MODE_SV39 8ULL
 #define MAKE_SATP(pagetable) ((SATP_MODE_SV39 << 60) | (((uint64_t)(pagetable)) >> 12))
 
 #define PAGESIZE          4096

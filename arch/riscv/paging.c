@@ -38,7 +38,7 @@
 #endif
 
 __attribute__((aligned(4096)))
-static pte_t kernel_page_table[PT_ENTRIES];
+pte_t kernel_page_table[PT_ENTRIES];
 
 static inline pte_t pa_to_pte_ppn(uint64_t pa)
 {
@@ -53,8 +53,6 @@ static inline phys_addr_t pte_to_pa(pte_t pte)
 static inline void vmm_install_page_table(page_table_t page_table)
 {
     phys_addr_t pt_phys = VIRT_TO_PHYS(page_table);
-
-    klog_info("vmm", "root page table physical address: 0x%x", (uint64_t)pt_phys);
 
     uint64_t satp_val = MAKE_SATP_VAL(pt_phys);
 
@@ -86,7 +84,7 @@ pte_t *vmm_walk(page_table_t page_table, virt_addr_t va, BOOL alloc)
             memset(l1_table, 0, PAGE_SIZE);
 
             //pte v bit
-            *pte2 = pa_to_pte_ppn(frame_pa) | PTE_V;
+            *pte2 = pa_to_pte_ppn(frame_pa) | PAGE_TABLE_NODE;
         } else {
             return NULL;
         }
@@ -107,7 +105,7 @@ pte_t *vmm_walk(page_table_t page_table, virt_addr_t va, BOOL alloc)
             memset(l0_table, 0, PAGE_SIZE);
 
             //only pte v bit
-            *pte1 = pa_to_pte_ppn(frame_pa) | PTE_V;
+            *pte1 = pa_to_pte_ppn(frame_pa) | PAGE_TABLE_NODE;
         } else {
             return NULL;
         }
@@ -128,7 +126,6 @@ phys_addr_t vmm_virt_to_phys(page_table_t page_table, virt_addr_t va)
     }
 
     phys_addr_t addr = pte_to_pa(*pte);
-    klog_info("vmm", "0x%x, 0x%x", *pte, addr);
 
     return addr | (va & 0xFFF);
 }
@@ -163,24 +160,31 @@ void vmm_init(boot_info_t *boot_info)
 {
     memset(kernel_page_table, 0, PAGE_SIZE);
 
-    //kern mapping
-    for (uint64_t addr = 0x80000000; addr < 0x8F000000; addr += PAGE_SIZE) {
+    //kern ro mapping
+    for (uint64_t addr = (uint64_t)boot_info->kernel_image_start; addr < (uint64_t)boot_info->kernel_readonly_end; addr += PAGE_SIZE) {
         if (vmmk_map_page(addr, addr, PAGE_KERNEL_EXEC) == FALSE) {
-            panic("vmm", "unable to map kernel page at 0x%x", addr);
+            panic("vmm", "unable to map ro kernel page at 0x%llx", addr);
+        }
+    }
+
+    //kern rw mapping
+    for (uint64_t addr = ALIGN_UP((uint64_t)boot_info->kernel_readonly_end, PAGE_SIZE); addr < (boot_info->machine_ram_base + boot_info->machine_ram_total); addr += PAGE_SIZE) {
+        if (vmmk_map_page(addr, addr, PAGE_KERNEL_DATA) == FALSE) {
+            panic("vmm", "unable to map rw kernel page at 0x%llx", addr);
         }
     }
 
     //map uart
     for (uint64_t mmio_addr = 0x10000000; mmio_addr < 0x10002000; mmio_addr += PAGE_SIZE) {
-        vmmk_map_page(mmio_addr, mmio_addr, PTE_R | PTE_W);
+        if (vmmk_map_page(mmio_addr, mmio_addr, PTE_R | PTE_W) == FALSE) {
+            panic("vmm", "unable to map mmio page at 0x%llx", mmio_addr);
+        }
     }
 
     klog_info("vmm", "installing page table");
-
-    klog_info("vmm", "virt to phys returned 0x%x", vmm_virt_to_phys(kernel_page_table, 0x80000000));
     
     //activate
     vmm_install_page_table(kernel_page_table);
 
-    klog_info("vmm", "paging initialized, page table at 0x%x", (uint64_t)kernel_page_table);
+    klog_info("vmm", "paging initialized, page table at 0x%llx", (uint64_t)kernel_page_table);
 }

@@ -14,6 +14,7 @@
  */
 
 #include <osdef.hpp>
+#include <boot/cpu.hpp>
 #include <drivers/timer.hpp>
 #include <libkern/klog.hpp>
 #include <mm/mm.hpp>
@@ -26,8 +27,10 @@ void kernel_main(boot_info_t *boot_info)
 #ifdef ARCH_SPEC_RISCV
     vmm_init(boot_info);
 #endif
+    timer_wait(2330);
     ob_init();
     object_test();
     
+    create_user_process();
     while (1);
 }
